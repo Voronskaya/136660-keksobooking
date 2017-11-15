@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Хроменкова Нина](https://up.htmlacademy.ru/javascript/11/user/136660).
-* Наставник: `Неизвестно`.
+* Наставник: [Тагир Алмасов](https://up.htmlacademy.ru/javascript/11/user/509357).
 
 ---
 
