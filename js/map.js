@@ -195,19 +195,27 @@ var getDescriptionType = function (type) {
   }
   return type;
 };
+
+var createListFeatures = function (featureList, wrapElement) {
+  for (var i = 0; i < featureList.length; i++) {
+    var featureElement = document.createElement('li');
+    featureElement.className = 'feature feature--' + featureList[i];
+    wrapElement.appendChild(featureElement);
+  }
+  return wrapElement;
+};
+
 // Можно ли в разметке тегам присвоить класс, чтобы не искать типа h4 + p + p?
-// Не совсем понимаю как мне отрисовывать li. Не понимаю последовательности.
-// Когда вызываю createDescription(8) - 8 раз, сколько раз отрисовывается карта
-// в самом конце закоменчен. функция по отрисовке li.
+
 var renderMapCard = function (descriptionCard) {
   var offerElement = template.cloneNode(true);
-  var offerTitle = offerElement.querySelector('h3');
+  var offerTitle = offerElement.querySelector('.map__title');
   var offerAddress = offerElement.querySelector('p > small');
   var offerPrice = offerElement.querySelector('.popup__price');
   var offerType = offerElement.querySelector('h4');
   var offerRoomsGuests = offerElement.querySelector('h4 + p');
   var offerCheckinOut = offerElement.querySelector('h4 + p + p');
-  // var offerFeatures = offerElement.querySelector('.popup__features');
+  var offerFeatures = offerElement.querySelector('.popup__features');
   var offerDescription = offerElement.querySelector('.popup__features + p');
   // var offerPhotos = offerElement.querySelector('.popup__pictures');
 
@@ -215,13 +223,13 @@ var renderMapCard = function (descriptionCard) {
   offerAddress.textContent = descriptionCard.offer.address;
   offerPrice.textContent = descriptionCard.offer.price + '&#x20bd;/ночь';
   offerType.textContent = getDescriptionType(descriptionCard.offer.type);
-  offerRoomsGuests.textContent = descriptionCard.offer.rooms + ' для ' + descriptionCard.offer.guests;
+  offerRoomsGuests.textContent = descriptionCard.offer.rooms + ' комнаты для ' + descriptionCard.offer.guests + ' гостей';
   offerCheckinOut.textContent = 'Заезд после ' + descriptionCard.offer.checkin + ', выезд до ' + descriptionCard.offer.checkout;
+  offerFeatures = createListFeatures(descriptionCard.offer.features, offerFeatures);
   offerDescription.textContent = descriptionCard.offer.description;
+  return offerElement;
 };
 
-// Выдает ошибку map.js:227 Uncaught TypeError: Failed to execute 'appendChild' on 'Node':
-// parameter 1 is not of type 'Node'. at renderMapCardList
 var renderMapCardList = function () {
   var cardList = createDescription(8);
   var fragment = document.createDocumentFragment();
@@ -232,16 +240,3 @@ var renderMapCardList = function () {
 };
 
 renderMapCardList();
-
-// длина - 8 раз = var cardDescriptionList = createDescription(8) = cardDescriptionList.length;
-// объект var featureList =  cardDescriptionList[i].offer.features.Надо передать cardDescriptionList.offer.features
-// var createListFeatures = function (obj, length) {
-//   var popupFeatures = document.querySelector('.popup__features');
-//   var fragment = document.createDocumentFragment();
-//   for (var i = 0; i < obj.length; i++) {
-//     var featureElement = document.createElement('li');
-//     featureElement.className = 'feature--' + featureList[i];
-//     fragment.appendChild(featureElement)
-//   }
-//   popupFeatures.appendChild(fragment);
-// };
