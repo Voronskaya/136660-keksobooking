@@ -53,6 +53,7 @@ var getRandomList = function (arr) {
   arr = arr.splice(0, range);
   return arr;
 };
+
 // Ф-ия для title и avatar
 // Смущает randomElement[0]: то, что там стоит конкретное число. Правильно ли это?
 var getRandomUniqueElement = function (arr) {
@@ -63,6 +64,7 @@ var getRandomUniqueElement = function (arr) {
   randomElement = arr.splice(randomIndex, 1);
   return randomElement[0];
 };
+// var tt = getRandomUniqueElement(hef);
 // Ф-ия для type, checkin, checkout.
 var getRandomElement = function (arr) {
   var min = 0;
@@ -128,7 +130,8 @@ var Offer = function (title, address, price, type,
 
 // Нужен параметр?
 var getAvatar = function () {
-  var avatar = getRandomUniqueElement(AVATARS);
+  var avatars = AVATARS.slice();
+  var avatar = getRandomUniqueElement(avatars);
   return new Author(avatar);
 };
 
@@ -164,6 +167,10 @@ var createDescription = function (length) {
   }
   return descriptions;
 };
+// var rr = createDescription(8);
+// for(var i =0;i<8;i++) {
+//   console.log(rr[i]);
+// }
 
 var renderMapPin = function (obj) {
   var mapPinElement = template.cloneNode(true);
@@ -185,15 +192,15 @@ var renderMapPinList = function () {
 
 renderMapPinList();
 
-var getDescriptionType = function (type) {
-  if (type === 'flat') {
-    type = 'Квартира';
-  } else if (type === 'bungalo') {
-    type = 'Бунгало';
-  } else if (type === 'house') {
-    type = 'Дом';
+var getDescriptionType = function (typeElement) {
+  if (typeElement === 'flat') {
+    typeElement = 'Квартира';
+  } else if (typeElement === 'bungalo') {
+    typeElement = 'Бунгало';
+  } else if (typeElement === 'house') {
+    typeElement = 'Дом';
   }
-  return type;
+  return typeElement;
 };
 
 var createListFeatures = function (featureList, wrapElement) {
@@ -217,7 +224,7 @@ var renderMapCard = function (descriptionCard) {
   var offerCheckinOut = offerElement.querySelector('h4 + p + p');
   var offerFeatures = offerElement.querySelector('.popup__features');
   var offerDescription = offerElement.querySelector('.popup__features + p');
-  // var offerPhotos = offerElement.querySelector('.popup__pictures');
+  var avatarUser = offerElement.querySelector('.popup__avatar');
 
   offerTitle.textContent = descriptionCard.offer.title;
   offerAddress.textContent = descriptionCard.offer.address;
@@ -227,6 +234,7 @@ var renderMapCard = function (descriptionCard) {
   offerCheckinOut.textContent = 'Заезд после ' + descriptionCard.offer.checkin + ', выезд до ' + descriptionCard.offer.checkout;
   offerFeatures = createListFeatures(descriptionCard.offer.features, offerFeatures);
   offerDescription.textContent = descriptionCard.offer.description;
+  avatarUser.src = descriptionCard.author.avatar;
   return offerElement;
 };
 
