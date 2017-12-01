@@ -1,122 +1,121 @@
 'use strict';
 
-var OFFERS = ['Большая уютная квартира', 'Маленькая неуютная квартира',
-'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
-'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря',
-'Неуютное бунгало по колено в воде'];
+var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
+  'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
+  'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var TYPES = ['flat', 'house', 'bungalo'];
 var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
 var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var main = document.querySelector('main');
-var map = main.querySelector('.map');
-var mapPins = main.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
 var template = document.querySelector('template').content;
+var AVATARS = [];
+// Не знаю где их лучше объявить.
+var copyTitle = TITLES.slice();
+var copyFeatures = FEATURES.slice();
+
 
 map.classList.remove('map--faded');
-// Массив с аватарами.
-var getAvatarList = function () {
+
+// Массив с аватарами. нужно ли выносить i=1 в min?
+// Проблема с нулем - user0: если аватаров будет больше, то
+// ноль будет прибавляться впереди двузначного числа.
+// Когда сгенерировала массив, нужно вызов ф-ии в переменную?
+// Почему в самом конце кода, если проверять значения AVATARS и TITLES - массивы пустые?
+
+var getAvatarList = function (arr, max) {
   var src = 'img/avatars/user0';
-  var max = 8;
-  var arr = [];
-  for(var i = 1; i <= max; i++) {
+  for (var i = 1; i <= max; i++) {
     arr.push(src + i + '.png');
   }
-  return arr[0];
-}
+  return arr;
+};
 
+getAvatarList(AVATARS, 8);
+
+// arr.length или copy.length?
 var getMixElements = function (arr) {
   var element;
+  var copy = arr.slice();
   for (var i = 0; i < arr.length; i++) {
     var random = Math.floor(Math.random() * (i + 1));
-    element = arr[i];
-    arr[i] = arr[random];
-    arr[random] = element;
+    element = copy[i];
+    copy[i] = copy[random];
+    copy[random] = element;
   }
-  return arr;
-}
+  return copy;
+};
 
 var getRandomList = function (arr) {
-  var copy = arr.slice();
-  var range = getRandomInteger(1, copy.length);
-  copy = getMixElements(copy);
-  copy = copy.splice(0, range);
-  return copy;
-}
-
-// Ф-ия под вопросом. Некорректно работает.
-// Не выполняется условие: значения не должны повторяться.
-var getRandomTitle = function (arr) {
-  var copy = arr.slice();
+  var range = getRandomInteger(1, arr.length);
+  arr = getMixElements(arr);
+  arr = arr.splice(0, range);
+  return arr;
+};
+// Ф-ия для title и avatar
+// Смущает randomElement[0]: то, что там стоит конкретное число. Правильно ли это?
+var getRandomUniqueElement = function (arr) {
   var randomElement;
   var min = 0;
   var max = arr.length - 1;
   var randomIndex = getRandomInteger(min, max);
-  copy = getMixElements(copy);
-  randomElement = copy.splice(randomIndex, 1);
+  randomElement = arr.splice(randomIndex, 1);
   return randomElement[0];
-}
-
+};
 // Ф-ия для type, checkin, checkout.
 var getRandomElement = function (arr) {
   var min = 0;
   var max = arr.length - 1;
   var randomIndex = getRandomInteger(min, max);
   return arr[randomIndex];
-}
+};
 // Расчет координат
 var Coordinates = function (x, y) {
   this.x = x;
   this.y = y;
-}
-var getLocationX = function () {
-  var minX = 300;
-  var maxX = 900;
-  var coordinateX = getRandomInteger(minX, maxX);
-  return coordinateX;
-}
+};
 
-var getLocationY = function () {
-  var minY = 100;
-  var maxY = 500;
-  var coordinateY = getRandomInteger(minY, maxY);
-  return coordinateY;
-}
+var getCoordinates = function (positionX1, positionX2, positionY1, positionY2) {
+  var coordinates = [];
+  var x = getRandomInteger(positionX1, positionX2);
+  var y = getRandomInteger(positionY1, positionY2);
+  coordinates[0] = x;
+  coordinates[1] = y;
+  return coordinates;
+};
 
-var getAddress = function () {
-  var x = getLocationX();
-  var y = getLocationY();
-  return 'location.' + x + ', location.' + y;
-}
 var getLocation = function () {
-  var locationObj = new Coordinates(getLocationX(), getLocationY());
+  var coordinates = getCoordinates(300, 900, 100, 500);
+  var x = coordinates[0];
+  var y = coordinates[1];
+  var locationObj = new Coordinates(x, y);
   return locationObj;
-}
+};
 
 // Ф-ия для получения price, rooms, guests.
-function getRandomInteger(min, max) {
+var getRandomInteger = function (min, max) {
   var random = min + Math.random() * (max - min + 1);
   random = Math.floor(random);
   return random;
-}
+};
 
-// Конструкторы
-var Description = function (author, offer, loaction) {
+var Description = function (author, offer, location) {
   this.author = author;
   this.offer = offer;
   this.location = location;
-}
+};
 
 var Author = function (avatar) {
   this.avatar = avatar;
-}
+};
 
 var Offer = function (title, address, price, type,
-  rooms, guests, checkin, checkout, features,
-  description, photos) {
+    rooms, guests, checkin, checkout, features,
+    description, photos) {
   this.title = title;
   this.address = address;
-  this.prcie = price;
+  this.price = price;
   this.type = type;
   this.rooms = rooms;
   this.guests = guests;
@@ -125,104 +124,124 @@ var Offer = function (title, address, price, type,
   this.features = features;
   this.description = description;
   this.photos = photos;
-}
+};
 
+// Нужен параметр?
 var getAvatar = function () {
-  var avatar = getAvatarList();
+  var avatar = getRandomUniqueElement(AVATARS);
   return new Author(avatar);
-}
+};
 
-var getOffer = function () {
-  var copy = OFFERS.slice();
+var getOffer = function (coordinateX, coordinateY) {
   var minPrice = 1000;
   var maxPrice = 1000000;
   var minGuests = 1;
   var maxGuests = 10;
   var minRooms = 1;
   var maxRooms = 5;
-  var title = getRandomTitle(copy);
-  var address = getAddress();
+  var title = getRandomUniqueElement(copyTitle);
+  var address = coordinateX + ', ' + coordinateY;
   var price = getRandomInteger(minPrice, maxPrice);
   var type = getRandomElement(TYPES);
   var rooms = getRandomInteger(minRooms, maxRooms);
   var guests = getRandomInteger(minGuests, maxGuests);
   var checkin = getRandomElement(CHECK_IN_TIMES);
   var checkout = getRandomElement(CHECK_OUT_TIMES);
-  var features = getRandomList(copy);
+  var features = getRandomList(copyFeatures);
   var description = '';
   var photos = [];
-  return new Offer(title, address, price, type, rooms, guests, checkin,
-    checkout, features, description, photos);
-}
+  return new Offer(title, address, price, type, rooms, guests,
+      checkin, checkout, features, description, photos);
+};
 
 var createDescription = function (length) {
   var descriptions = [];
-  for(var i = 0; i < length; i++) {
+  for (var i = 0; i < length; i++) {
     var author = getAvatar();
-    var offer = getOffer();
     var location = getLocation();
+    var offer = getOffer(location.x, location.y);
     descriptions.push(new Description(author, offer, location));
   }
   return descriptions;
-}
+};
 
-// Стр 186 не уверена, что тут так можно писать.
-var renderOffer = function (obj) {
+var renderMapPin = function (obj) {
+  var mapPinElement = template.cloneNode(true);
+  var mapPin = mapPinElement.querySelector('.map__pin');
+
+  mapPin.style.left = obj.location.x + 'px';
+  mapPin.style.top = obj.location.y + 'px';
+  return mapPinElement;
+};
+
+var renderMapPinList = function () {
+  var pinList = createDescription(8);
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < pinList.length; i++) {
+    fragment.appendChild(renderMapPin(pinList[i]));
+  }
+  mapPins.appendChild(fragment);
+};
+
+renderMapPinList();
+
+var getDescriptionType = function (type) {
+  if (type === 'flat') {
+    type = 'Квартира';
+  } else if (type === 'bungalo') {
+    type = 'Бунгало';
+  } else if (type === 'house') {
+    type = 'Дом';
+  }
+  return type;
+};
+// Можно ли в разметке тегам присвоить класс, чтобы не искать типа h4 + p + p?
+// Не совсем понимаю как мне отрисовывать li. Не понимаю последовательности.
+// Когда вызываю createDescription(8) - 8 раз, сколько раз отрисовывается карта
+// в самом конце закоменчен. функция по отрисовке li.
+var renderMapCard = function (descriptionCard) {
   var offerElement = template.cloneNode(true);
-  var offerMapCard = offerElement.querySelector('.map__card');
   var offerTitle = offerElement.querySelector('h3');
   var offerAddress = offerElement.querySelector('p > small');
   var offerPrice = offerElement.querySelector('.popup__price');
   var offerType = offerElement.querySelector('h4');
   var offerRoomsGuests = offerElement.querySelector('h4 + p');
   var offerCheckinOut = offerElement.querySelector('h4 + p + p');
-  var offerFeatures = offerElement.querySelector('.popup__features');
+  // var offerFeatures = offerElement.querySelector('.popup__features');
   var offerDescription = offerElement.querySelector('.popup__features + p');
-  var offerPhotos = offerElement.querySelector('.popup__pictures');
+  // var offerPhotos = offerElement.querySelector('.popup__pictures');
 
-  offerTitle.textContent = obj.offer.title;
-  offerAddress.textContent = obj.offer.address;
-  offerPrice.textContent = obj.offer.price + '&#x20bd;/ночь';
-  offerType.textContent = 'flat' ? 'Квартира' : offerType.textContent = 'bungalo' ? 'Бунгало' : offerType.textContent = 'house' ? 'Дом';
-  offerRoomsGuests.textContent = obj.offer.rooms + ' для ' + obj.offer.guests + ' гостей';
-  offerRoomsGuest.textContent = 'Заезд после ' + obj.offer.checkin +
-  ', выезд до ' + obj.offer.checkout;
-}
+  offerTitle.textContent = descriptionCard.offer.title;
+  offerAddress.textContent = descriptionCard.offer.address;
+  offerPrice.textContent = descriptionCard.offer.price + '&#x20bd;/ночь';
+  offerType.textContent = getDescriptionType(descriptionCard.offer.type);
+  offerRoomsGuests.textContent = descriptionCard.offer.rooms + ' для ' + descriptionCard.offer.guests;
+  offerCheckinOut.textContent = 'Заезд после ' + descriptionCard.offer.checkin + ', выезд до ' + descriptionCard.offer.checkout;
+  offerDescription.textContent = descriptionCard.offer.description;
+};
 
-var renderOfferList = function () {
-  var offerList = createDescription(8);
+// Выдает ошибку map.js:227 Uncaught TypeError: Failed to execute 'appendChild' on 'Node':
+// parameter 1 is not of type 'Node'. at renderMapCardList
+var renderMapCardList = function () {
+  var cardList = createDescription(8);
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < offerList.length; i++) {
-    fragment.appendChild(renderOffer(offerList[i]));
+  for (var i = 0; i < cardList.length; i++) {
+    fragment.appendChild(renderMapCard(cardList[i]));
   }
   map.appendChild(fragment);
-}
-renderOfferList();
-// Тестирование - отрисовка объекта==================
-// var Dog = function (x, y) {
-//   this.x = x;
-//   this.y = y;
-// }
+};
 
-// var getTest = function (length) {
-//   var testArr = [];
-//   testArr.push(new Dog(100, 200));
-//   return testArr;
-// }
+renderMapCardList();
 
-// var renderPin = function (obj) {
-//   var pinElement = template.cloneNode(true);
-//   var pinButton = pinElement.querySelector('.map__pin');
-
-//   pinButton.style.left = obj.x + 'px';
-//   pinButton.style.top = obj.y + 'px';
-//   return pinElement;
-// }
-
-// var renderPinList = function () {
-//   var testList = getTest(1);
+// длина - 8 раз = var cardDescriptionList = createDescription(8) = cardDescriptionList.length;
+// объект var featureList =  cardDescriptionList[i].offer.features.Надо передать cardDescriptionList.offer.features
+// var createListFeatures = function (obj, length) {
+//   var popupFeatures = document.querySelector('.popup__features');
 //   var fragment = document.createDocumentFragment();
-//   fragment.appendChild(renderPin(testList[0]));
-//   mapPins.appendChild(fragment);
-// }
-// renderPinList();
+//   for (var i = 0; i < obj.length; i++) {
+//     var featureElement = document.createElement('li');
+//     featureElement.className = 'feature--' + featureList[i];
+//     fragment.appendChild(featureElement)
+//   }
+//   popupFeatures.appendChild(fragment);
+// };
