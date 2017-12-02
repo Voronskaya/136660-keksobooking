@@ -10,241 +10,212 @@ var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var template = document.querySelector('template').content;
-var AVATARS = [];
-// Не знаю где их лучше объявить.
-var copyTitle = TITLES.slice();
-var copyFeatures = FEATURES.slice();
-
 
 map.classList.remove('map--faded');
 
-// Массив с аватарами. нужно ли выносить i=1 в min?
-// Проблема с нулем - user0: если аватаров будет больше, то
-// ноль будет прибавляться впереди двузначного числа.
-// Когда сгенерировала массив, нужно вызов ф-ии в переменную?
-// Почему в самом конце кода, если проверять значения AVATARS и TITLES - массивы пустые?
-
-var getAvatarList = function (arr, max) {
+var getAvatarList = function (range) {
+  var avatars = [];
   var src = 'img/avatars/user0';
-  for (var i = 1; i <= max; i++) {
-    arr.push(src + i + '.png');
+  for (var i = 1; i <= range; i++) {
+    avatars.push(src + i + '.png');
   }
-  return arr;
+  return avatars;
 };
 
-getAvatarList(AVATARS, 8);
+var avatars = getAvatarList(8);
 
-// arr.length или copy.length?
-var getMixElements = function (arr) {
+var shuffle = function (arr) {
   var element;
-  var copy = arr.slice();
+  var list = arr.slice();
   for (var i = 0; i < arr.length; i++) {
     var random = Math.floor(Math.random() * (i + 1));
-    element = copy[i];
-    copy[i] = copy[random];
-    copy[random] = element;
+    element = list[i];
+    list[i] = list[random];
+    list[random] = element;
   }
-  return copy;
+  return list;
 };
 
 var getRandomList = function (arr) {
+  var randomList = arr.slice();
   var range = getRandomInteger(1, arr.length);
-  arr = getMixElements(arr);
-  arr = arr.splice(0, range);
-  return arr;
+  randomList = shuffle(randomList);
+  randomList = randomList.splice(0, range);
+  return randomList;
 };
 
-// Ф-ия для title и avatar
-// Смущает randomElement[0]: то, что там стоит конкретное число. Правильно ли это?
 var getRandomUniqueElement = function (arr) {
   var randomElement;
-  var min = 0;
   var max = arr.length - 1;
-  var randomIndex = getRandomInteger(min, max);
-  randomElement = arr.splice(randomIndex, 1);
-  return randomElement[0];
-};
-// var tt = getRandomUniqueElement(hef);
-// Ф-ия для type, checkin, checkout.
-var getRandomElement = function (arr) {
-  var min = 0;
-  var max = arr.length - 1;
-  var randomIndex = getRandomInteger(min, max);
-  return arr[randomIndex];
-};
-// Расчет координат
-var Coordinates = function (x, y) {
-  this.x = x;
-  this.y = y;
+  var randomIndex = getRandomInteger(0, max);
+  randomElement = arr.splice(randomIndex, 1)[0];
+  return randomElement;
 };
 
-var getCoordinates = function (positionX1, positionX2, positionY1, positionY2) {
-  var coordinates = [];
-  var x = getRandomInteger(positionX1, positionX2);
-  var y = getRandomInteger(positionY1, positionY2);
-  coordinates[0] = x;
-  coordinates[1] = y;
-  return coordinates;
+var getRandomElement = function (arr) {
+  var max = arr.length - 1;
+  var randomIndex = getRandomInteger(0, max);
+  return arr[randomIndex];
+};
+
+var getRandomInteger = function (min, max) {
+  var randomValue = min + Math.random() * (max - min + 1);
+  randomValue = Math.floor(randomValue);
+  return randomValue;
 };
 
 var getLocation = function () {
-  var coordinates = getCoordinates(300, 900, 100, 500);
-  var x = coordinates[0];
-  var y = coordinates[1];
-  var locationObj = new Coordinates(x, y);
-  return locationObj;
+  var coordinateX = getRandomInteger(300, 900);
+  var coordinateY = getRandomInteger(100, 500);
+  return {
+    x: coordinateX,
+    y: coordinateY
+  };
 };
 
-// Ф-ия для получения price, rooms, guests.
-var getRandomInteger = function (min, max) {
-  var random = min + Math.random() * (max - min + 1);
-  random = Math.floor(random);
-  return random;
+var getAuthor = function (avatarList) {
+  var avatarUser = getRandomUniqueElement(avatarList);
+  return {
+    avatar: avatarUser
+  };
 };
 
-var Description = function (author, offer, location) {
-  this.author = author;
-  this.offer = offer;
-  this.location = location;
-};
-
-var Author = function (avatar) {
-  this.avatar = avatar;
-};
-
-var Offer = function (title, address, price, type,
-    rooms, guests, checkin, checkout, features,
-    description, photos) {
-  this.title = title;
-  this.address = address;
-  this.price = price;
-  this.type = type;
-  this.rooms = rooms;
-  this.guests = guests;
-  this.checkin = checkin;
-  this.checkout = checkout;
-  this.features = features;
-  this.description = description;
-  this.photos = photos;
-};
-
-// Нужен параметр?
-var getAvatar = function () {
-  var avatars = AVATARS.slice();
-  var avatar = getRandomUniqueElement(avatars);
-  return new Author(avatar);
-};
-
-var getOffer = function (coordinateX, coordinateY) {
+var getOffer = function (coordinateX, coordinateY, titleList) {
   var minPrice = 1000;
   var maxPrice = 1000000;
   var minGuests = 1;
   var maxGuests = 10;
   var minRooms = 1;
   var maxRooms = 5;
-  var title = getRandomUniqueElement(copyTitle);
-  var address = coordinateX + ', ' + coordinateY;
-  var price = getRandomInteger(minPrice, maxPrice);
-  var type = getRandomElement(TYPES);
-  var rooms = getRandomInteger(minRooms, maxRooms);
-  var guests = getRandomInteger(minGuests, maxGuests);
-  var checkin = getRandomElement(CHECK_IN_TIMES);
-  var checkout = getRandomElement(CHECK_OUT_TIMES);
-  var features = getRandomList(copyFeatures);
-  var description = '';
-  var photos = [];
-  return new Offer(title, address, price, type, rooms, guests,
-      checkin, checkout, features, description, photos);
+  return {
+    title: getRandomUniqueElement(titleList),
+    address: coordinateX + ', ' + coordinateY,
+    price: getRandomInteger(minPrice, maxPrice),
+    type: getRandomElement(TYPES),
+    rooms: getRandomInteger(minRooms, maxRooms),
+    guests: getRandomInteger(minGuests, maxGuests),
+    checkin: getRandomElement(CHECK_IN_TIMES),
+    checkout: getRandomElement(CHECK_OUT_TIMES),
+    features: getRandomList(FEATURES),
+    description: '',
+    photos: []
+  };
 };
 
-var createDescription = function (length) {
+// Не знаю как лучше назвать параметры. Могу типа authorObject
+var getDescription = function (author, offer, location) {
+  return {
+    author: author,
+    offer: offer,
+    location: location
+  };
+};
+
+var createDescription = function (range) {
   var descriptions = [];
-  for (var i = 0; i < length; i++) {
-    var author = getAvatar();
+  var copyAvatars = avatars.slice();
+  var copyTitles = TITLES.slice();
+
+  for (var i = 0; i < range; i++) {
+    var author = getAuthor(copyAvatars);
     var location = getLocation();
-    var offer = getOffer(location.x, location.y);
-    descriptions.push(new Description(author, offer, location));
+    var offer = getOffer(location.x, location.y, copyTitles);
+    descriptions.push(getDescription(author, offer, location));
   }
   return descriptions;
 };
-// var rr = createDescription(8);
-// for(var i =0;i<8;i++) {
-//   console.log(rr[i]);
-// }
 
-var renderMapPin = function (obj) {
-  var mapPinElement = template.cloneNode(true);
-  var mapPin = mapPinElement.querySelector('.map__pin');
+var renderMapPin = function (coordinateX, coordinateY, pinAvatar) {
+  var templateElement = template.cloneNode(true);
+  var mapPinElement = templateElement.querySelector('.map__pin');
+  var mapPinAvatar = mapPinElement.querySelector('img');
+  var sizePinWidth = 46;
+  var sisePinHeight = 64;
+  var centerPinWidth = sizePinWidth / 2;
+  mapPinElement.style.left = (coordinateX - centerPinWidth) + 'px';
+  mapPinElement.style.top = (coordinateY - sisePinHeight) + 'px';
+  mapPinAvatar.src = pinAvatar;
 
-  mapPin.style.left = obj.location.x + 'px';
-  mapPin.style.top = obj.location.y + 'px';
   return mapPinElement;
 };
 
-var renderMapPinList = function () {
-  var pinList = createDescription(8);
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < pinList.length; i++) {
-    fragment.appendChild(renderMapPin(pinList[i]));
+var getDescriptionType = function (descriptionType) {
+  if (descriptionType === 'flat') {
+    descriptionType = 'Квартира';
+  } else if (descriptionType === 'bungalo') {
+    descriptionType = 'Бунгало';
+  } else if (descriptionType === 'house') {
+    descriptionType = 'Дом';
   }
-  mapPins.appendChild(fragment);
+  return descriptionType;
 };
 
-renderMapPinList();
+// var createListFeatures = function (featureList, parentElement) {
+//   for (var i = 0; i < featureList.length; i++) {
+//     var featureElement = document.createElement('li');
+//     featureElement.className = 'feature feature--' + featureList[i];
+//     parentElement.appendChild(featureElement);
+//   }
+//   return parentElement;
+// };
 
-var getDescriptionType = function (typeElement) {
-  if (typeElement === 'flat') {
-    typeElement = 'Квартира';
-  } else if (typeElement === 'bungalo') {
-    typeElement = 'Бунгало';
-  } else if (typeElement === 'house') {
-    typeElement = 'Дом';
-  }
-  return typeElement;
-};
+// У меня нарушена здесь логика.
+// Ф-ия createListFeatures создает li, которые помещает в ul в цикле.
+// Bозвращаю ul.
+// В разметке ul имеет класс .popup__features.
+// Далее, в ф-ии renderMapCard:
+// объявляю var offerFeatures - ее значение это доступ к элементу .popup__features.
+// А потом я в эту переменную кладу вызов функции создания списка.
+// По факту получается, что ul = ul(с li);
+// Результат получается нужный, но на меня ругается трэвис:
+// пишет, что offerFeatures is assigned a value but never used.
+// Пробовала сделать по-другому, не получается.
 
-var createListFeatures = function (featureList, wrapElement) {
+var createListFeatures = function (featureList, parentElement) {
   for (var i = 0; i < featureList.length; i++) {
     var featureElement = document.createElement('li');
     featureElement.className = 'feature feature--' + featureList[i];
-    wrapElement.appendChild(featureElement);
+    parentElement.appendChild(featureElement);
   }
-  return wrapElement;
+  return parentElement;
 };
 
-// Можно ли в разметке тегам присвоить класс, чтобы не искать типа h4 + p + p?
-
-var renderMapCard = function (descriptionCard) {
+var renderMapCard = function (descriptionCard, imgAvatar) {
   var offerElement = template.cloneNode(true);
-  var offerTitle = offerElement.querySelector('.map__title');
-  var offerAddress = offerElement.querySelector('p > small');
-  var offerPrice = offerElement.querySelector('.popup__price');
-  var offerType = offerElement.querySelector('h4');
-  var offerRoomsGuests = offerElement.querySelector('h4 + p');
-  var offerCheckinOut = offerElement.querySelector('h4 + p + p');
-  var offerFeatures = offerElement.querySelector('.popup__features');
-  var offerDescription = offerElement.querySelector('.popup__features + p');
-  var avatarUser = offerElement.querySelector('.popup__avatar');
+  var mapCardElement = offerElement.querySelector('.map__card');
+  var offerTitle = mapCardElement.querySelector('h3');
+  var offerAddress = mapCardElement.querySelector('p > small');
+  var offerPrice = mapCardElement.querySelector('.popup__price');
+  var offerType = mapCardElement.querySelector('h4');
+  var offerRoomsGuests = mapCardElement.querySelector('h4 + p');
+  var offerCheckinOut = mapCardElement.querySelector('h4 + p + p');
+  var offerFeatures = mapCardElement.querySelector('.popup__features');
+  var offerDescription = mapCardElement.querySelector('.popup__features + p');
+  var avatarUser = mapCardElement.querySelector('.popup__avatar');
 
-  offerTitle.textContent = descriptionCard.offer.title;
-  offerAddress.textContent = descriptionCard.offer.address;
-  offerPrice.textContent = descriptionCard.offer.price + '&#x20bd;/ночь';
-  offerType.textContent = getDescriptionType(descriptionCard.offer.type);
-  offerRoomsGuests.textContent = descriptionCard.offer.rooms + ' комнаты для ' + descriptionCard.offer.guests + ' гостей';
-  offerCheckinOut.textContent = 'Заезд после ' + descriptionCard.offer.checkin + ', выезд до ' + descriptionCard.offer.checkout;
-  offerFeatures = createListFeatures(descriptionCard.offer.features, offerFeatures);
-  offerDescription.textContent = descriptionCard.offer.description;
-  avatarUser.src = descriptionCard.author.avatar;
-  return offerElement;
+  offerTitle.textContent = descriptionCard.title;
+  offerAddress.textContent = descriptionCard.address;
+  offerPrice.innerHTML = descriptionCard.price + '&#x20bd;/ночь';
+  offerType.textContent = getDescriptionType(descriptionCard.type);
+  offerRoomsGuests.textContent = descriptionCard.rooms + ' комнаты для ' + descriptionCard.guests + ' гостей';
+  offerCheckinOut.textContent = 'Заезд после ' + descriptionCard.checkin + ', выезд до ' + descriptionCard.checkout;
+  offerFeatures = createListFeatures(descriptionCard.features, offerFeatures);
+  offerDescription.textContent = descriptionCard.description;
+  avatarUser.src = imgAvatar;
+  return mapCardElement;
 };
 
-var renderMapCardList = function () {
-  var cardList = createDescription(8);
+var renderMapPinList = function () {
+  var descriptions = createDescription(8);
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < cardList.length; i++) {
-    fragment.appendChild(renderMapCard(cardList[i]));
+
+  for (var i = 0; i < descriptions.length; i++) {
+    fragment.appendChild(renderMapPin(descriptions[i].location.x,
+        descriptions[i].location.y, descriptions[i].author.avatar));
+    fragment.appendChild(renderMapCard(descriptions[i].offer, descriptions[i].author.avatar));
   }
+  mapPins.appendChild(fragment);
   map.appendChild(fragment);
 };
 
-renderMapCardList();
+renderMapPinList();
