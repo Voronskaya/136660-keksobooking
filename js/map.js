@@ -1,18 +1,5 @@
 'use strict';
 
-var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
-  'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
-  'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var TYPES = ['flat', 'house', 'bungalo'];
-var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
-var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
-var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var map = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
-var template = document.querySelector('template').content;
-
-map.classList.remove('map--faded');
-
 var getAvatarList = function (range) {
   var avatars = [];
   var src = 'img/avatars/user0';
@@ -22,40 +9,42 @@ var getAvatarList = function (range) {
   return avatars;
 };
 
-var avatars = getAvatarList(8);
-
-var shuffle = function (arr) {
+var shuffle = function (list) {
   var element;
-  var list = arr.slice();
-  for (var i = 0; i < arr.length; i++) {
+  var elements = list.slice();
+  for (var i = 0; i < list.length; i++) {
     var random = Math.floor(Math.random() * (i + 1));
-    element = list[i];
-    list[i] = list[random];
-    list[random] = element;
+    element = elements[i];
+    elements[i] = elements[random];
+    elements[random] = element;
   }
-  return list;
+  return elements;
 };
 
-var getRandomList = function (arr) {
-  var randomList = arr.slice();
-  var range = getRandomInteger(1, arr.length);
+var getRandomList = function (list) {
+  var randomList = list.slice();
+  var range = getRandomInteger(1, list.length);
   randomList = shuffle(randomList);
   randomList = randomList.splice(0, range);
   return randomList;
 };
 
-var getRandomUniqueElement = function (arr) {
+var getRandomUniqueElement = function (list) {
   var randomElement;
-  var max = arr.length - 1;
-  var randomIndex = getRandomInteger(0, max);
-  randomElement = arr.splice(randomIndex, 1)[0];
+  var randomIndex = getRandomIndex(list.length);
+  randomElement = list.splice(randomIndex, 1)[0];
   return randomElement;
 };
 
-var getRandomElement = function (arr) {
-  var max = arr.length - 1;
-  var randomIndex = getRandomInteger(0, max);
-  return arr[randomIndex];
+var getRandomElement = function (list) {
+  var randomIndex = getRandomIndex(list.length);
+  return list[randomIndex];
+};
+
+var getRandomIndex = function (value) {
+  var randomValue = Math.random() * value;
+  randomValue = Math.floor(randomValue);
+  return randomValue;
 };
 
 var getRandomInteger = function (min, max) {
@@ -73,14 +62,14 @@ var getLocation = function () {
   };
 };
 
-var getAuthor = function (avatarList) {
-  var avatarUser = getRandomUniqueElement(avatarList);
+var getAuthor = function (avatars) {
+  var sourceAvatar = getRandomUniqueElement(avatars);
   return {
-    avatar: avatarUser
+    avatar: sourceAvatar
   };
 };
 
-var getOffer = function (coordinateX, coordinateY, titleList) {
+var getOffer = function (coordinateX, coordinateY, titles) {
   var minPrice = 1000;
   var maxPrice = 1000000;
   var minGuests = 1;
@@ -88,7 +77,7 @@ var getOffer = function (coordinateX, coordinateY, titleList) {
   var minRooms = 1;
   var maxRooms = 5;
   return {
-    title: getRandomUniqueElement(titleList),
+    title: getRandomUniqueElement(titles),
     address: coordinateX + ', ' + coordinateY,
     price: getRandomInteger(minPrice, maxPrice),
     type: getRandomElement(TYPES),
@@ -102,7 +91,6 @@ var getOffer = function (coordinateX, coordinateY, titleList) {
   };
 };
 
-// Не знаю как лучше назвать параметры. Могу типа authorObject
 var getDescription = function (author, offer, location) {
   return {
     author: author,
@@ -125,7 +113,7 @@ var createDescription = function (range) {
   return descriptions;
 };
 
-var renderMapPin = function (coordinateX, coordinateY, pinAvatar) {
+var renderMapPin = function (coordinateX, coordinateY, imgAvatar) {
   var templateElement = template.cloneNode(true);
   var mapPinElement = templateElement.querySelector('.map__pin');
   var mapPinAvatar = mapPinElement.querySelector('img');
@@ -134,53 +122,40 @@ var renderMapPin = function (coordinateX, coordinateY, pinAvatar) {
   var centerPinWidth = sizePinWidth / 2;
   mapPinElement.style.left = (coordinateX - centerPinWidth) + 'px';
   mapPinElement.style.top = (coordinateY - sisePinHeight) + 'px';
-  mapPinAvatar.src = pinAvatar;
+  mapPinAvatar.src = imgAvatar;
 
   return mapPinElement;
 };
 
 var getDescriptionType = function (descriptionType) {
+  var translationType;
   if (descriptionType === 'flat') {
-    descriptionType = 'Квартира';
+    translationType = 'Квартира';
   } else if (descriptionType === 'bungalo') {
-    descriptionType = 'Бунгало';
+    translationType = 'Бунгало';
   } else if (descriptionType === 'house') {
-    descriptionType = 'Дом';
+    translationType = 'Дом';
   }
-  return descriptionType;
+  return translationType;
 };
 
-// var createListFeatures = function (featureList, parentElement) {
-//   for (var i = 0; i < featureList.length; i++) {
-//     var featureElement = document.createElement('li');
-//     featureElement.className = 'feature feature--' + featureList[i];
-//     parentElement.appendChild(featureElement);
-//   }
-//   return parentElement;
-// };
-
-// У меня нарушена здесь логика.
-// Ф-ия createListFeatures создает li, которые помещает в ul в цикле.
-// Bозвращаю ul.
-// В разметке ul имеет класс .popup__features.
-// Далее, в ф-ии renderMapCard:
-// объявляю var offerFeatures - ее значение это доступ к элементу .popup__features.
-// А потом я в эту переменную кладу вызов функции создания списка.
-// По факту получается, что ul = ul(с li);
-// Результат получается нужный, но на меня ругается трэвис:
-// пишет, что offerFeatures is assigned a value but never used.
-// Пробовала сделать по-другому, не получается.
-
-var createListFeatures = function (featureList, parentElement) {
-  for (var i = 0; i < featureList.length; i++) {
+var createFeatures = function (features) {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < features.length; i++) {
     var featureElement = document.createElement('li');
-    featureElement.className = 'feature feature--' + featureList[i];
-    parentElement.appendChild(featureElement);
+    featureElement.className = 'feature feature--' + features[i];
+    fragment.appendChild(featureElement);
   }
-  return parentElement;
+  return fragment;
 };
 
-var renderMapCard = function (descriptionCard, imgAvatar) {
+var removeChild = function (parent, child) {
+  for (var i = 0; i < child.length; i++) {
+    parent.removeChild(child[i]);
+  }
+};
+
+var renderMapCard = function (descriptionOffer, imgAvatar) {
   var offerElement = template.cloneNode(true);
   var mapCardElement = offerElement.querySelector('.map__card');
   var offerTitle = mapCardElement.querySelector('h3');
@@ -190,32 +165,54 @@ var renderMapCard = function (descriptionCard, imgAvatar) {
   var offerRoomsGuests = mapCardElement.querySelector('h4 + p');
   var offerCheckinOut = mapCardElement.querySelector('h4 + p + p');
   var offerFeatures = mapCardElement.querySelector('.popup__features');
+  var itemFeatures = offerFeatures.querySelectorAll('.feature');
   var offerDescription = mapCardElement.querySelector('.popup__features + p');
   var avatarUser = mapCardElement.querySelector('.popup__avatar');
 
-  offerTitle.textContent = descriptionCard.title;
-  offerAddress.textContent = descriptionCard.address;
-  offerPrice.innerHTML = descriptionCard.price + '&#x20bd;/ночь';
-  offerType.textContent = getDescriptionType(descriptionCard.type);
-  offerRoomsGuests.textContent = descriptionCard.rooms + ' комнаты для ' + descriptionCard.guests + ' гостей';
-  offerCheckinOut.textContent = 'Заезд после ' + descriptionCard.checkin + ', выезд до ' + descriptionCard.checkout;
-  offerFeatures = createListFeatures(descriptionCard.features, offerFeatures);
-  offerDescription.textContent = descriptionCard.description;
+  offerTitle.textContent = descriptionOffer.title;
+  offerAddress.textContent = descriptionOffer.address;
+  offerPrice.innerHTML = descriptionOffer.price + '&#x20bd;/ночь';
+  offerType.textContent = getDescriptionType(descriptionOffer.type);
+  offerRoomsGuests.textContent = descriptionOffer.rooms + ' комнаты для ' + descriptionOffer.guests + ' гостей';
+  offerCheckinOut.textContent = 'Заезд после ' + descriptionOffer.checkin + ', выезд до ' + descriptionOffer.checkout;
+
+  removeChild(offerFeatures, itemFeatures);
+  offerFeatures.appendChild(createFeatures(descriptionOffer.features));
+  offerDescription.textContent = descriptionOffer.description;
   avatarUser.src = imgAvatar;
   return mapCardElement;
 };
 
 var renderMapPinList = function () {
-  var descriptions = createDescription(8);
   var fragment = document.createDocumentFragment();
-
   for (var i = 0; i < descriptions.length; i++) {
     fragment.appendChild(renderMapPin(descriptions[i].location.x,
         descriptions[i].location.y, descriptions[i].author.avatar));
-    fragment.appendChild(renderMapCard(descriptions[i].offer, descriptions[i].author.avatar));
   }
   mapPins.appendChild(fragment);
+};
+
+var renderMapCardList = function () {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < descriptions.length; i++) {
+    fragment.appendChild(renderMapCard(descriptions[i].offer, descriptions[i].author.avatar));
+  }
   map.appendChild(fragment);
 };
 
+var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
+  'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
+  'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+var TYPES = ['flat', 'house', 'bungalo'];
+var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
+var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
+var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
+var template = document.querySelector('template').content;
+var avatars = getAvatarList(8);
+var descriptions = createDescription(8);
+map.classList.remove('map--faded');
+
 renderMapPinList();
+renderMapCardList();
