@@ -194,6 +194,18 @@
       map.appendChild(fragment);
     };
 
+    var setValueDisabledFieldset = function (boolean) {
+      for (var i = 0; i < fieldset.length; i++) {
+        fieldset[i].disabled = boolean;
+      }
+    };
+
+    var buttonPinMainMouseupHandler = function () {
+      map.classList.remove('map--faded');
+      noticeForm.classList.remove('notice__form--disabled');
+      setDisableFieldset(false);
+    };
+
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
       'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
       'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
@@ -202,13 +214,17 @@
     var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
     var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
     var map = document.querySelector('.map');
-    var mapPins = document.querySelector('.map__pins');
+    var mapPins = map.querySelector('.map__pins');
+    var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
+    var noticeForm = document.querySelector('.notice__form');
+    var fieldset = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
-    map.classList.remove('map--faded');
 
     renderMapPinList();
     renderMapCardList();
+    setValueDisabledFieldset(true);
+    mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
   });
 })();
