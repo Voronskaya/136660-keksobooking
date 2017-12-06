@@ -194,17 +194,25 @@
       map.appendChild(fragment);
     };
 
-    var setValueDisabledFieldset = function (boolean) {
-      for (var i = 0; i < fieldset.length; i++) {
-        fieldset[i].disabled = boolean;
+    var disableForm = function (boolean) {
+      for (var i = 0; i < fieldsets.length; i++) {
+        fieldsets[i].disabled = boolean;
       }
     };
 
     var buttonPinMainMouseupHandler = function () {
       map.classList.remove('map--faded');
+      renderMapPinList();
       noticeForm.classList.remove('notice__form--disabled');
-      setValueDisabledFieldset(false);
+      disableForm(false);
     };
+
+    // Неработающий вариант
+    // var buttonPinClickHandler = function (evt) {
+    //   if (evt.target.className = 'map__pin') {
+    //     evt.target.className = 'map__pin map__pin--active';
+    //   }
+    // };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
       'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
@@ -218,13 +226,13 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
-    var fieldset = noticeForm.querySelectorAll('fieldset');
+    var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
 
-    renderMapPinList();
     renderMapCardList();
-    setValueDisabledFieldset(true);
+    disableForm(true);
     mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
+    // map.addEventListener('click', buttonPinClickHandler);
   });
 })();
