@@ -203,7 +203,7 @@
     var buttonPinMainMouseupHandler = function () {
       map.classList.remove('map--faded');
       noticeForm.classList.remove('notice__form--disabled');
-      setDisableFieldset(false);
+      setValueDisabledFieldset(false);
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
