@@ -210,15 +210,6 @@
       disableForm(false);
     };
 
-    // Не работает. не выполнить:
-    // Если до этого у другого элемента
-    // существовал класс pin--active, то у этого элемента класс нужно убрать.
-    // var removeClass = function () {
-    //   for (var i = 0; i < mapPins.childNodes.length; i++) {
-    //     return mapPins.childNodes[i].toggle('map__pin--active', false);
-    //   }
-    // };
-
     var takeMapCard = function (target) {
       for (var i = 0; i < descriptions.length; i++) {
         if (target.attributes[0].value === descriptions[i].author.avatar) {
@@ -228,12 +219,23 @@
       }
     };
 
-    var buttonPinClickHandler = function (evt) {
-      var target = evt.target;
+    var checkIsPopup = function () {
       if (map.querySelector('.popup')) {
         map.querySelector('.popup').remove();
       }
+    };
 
+    var removeClass = function () {
+      var buttons = mapPins.querySelectorAll('button');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.toggle('map__pin--active', false);
+      }
+    };
+
+    var buttonPinClickHandler = function (evt) {
+      var target = evt.target;
+      checkIsPopup();
+      removeClass();
       if (target.parentNode.classList.contains('map__pin') && !target.parentNode.classList.contains('map__pin--main')) {
         target.parentNode.classList.toggle('map__pin--active');
         takeMapCard(target);
@@ -241,6 +243,7 @@
       }
     };
 
+    // Не получается открыть карточку через ентер
     var pinKeydownHandler = function (evt) {
       if (evt.keyCode === ENTER_KEYCODE) {
         buttonPinClickHandler(evt);
