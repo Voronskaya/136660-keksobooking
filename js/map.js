@@ -186,11 +186,9 @@
       mapPins.appendChild(fragment);
     };
 
-    var renderMapCardList = function () {
+    var renderMapCardList = function (index) {
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < descriptions.length; i++) {
-        fragment.appendChild(renderMapCard(descriptions[i].offer, descriptions[i].author.avatar));
-      }
+      fragment.appendChild(renderMapCard(descriptions[index].offer, descriptions[index].author.avatar));
       map.appendChild(fragment);
     };
 
@@ -206,6 +204,7 @@
       noticeForm.classList.remove('notice__form--disabled');
       disableForm(false);
     };
+
     // Не работает. не выполнить:
     // Если до этого у другого элемента
     // существовал класс pin--active, то у этого элемента класс нужно убрать.
@@ -216,13 +215,23 @@
     //     }
     //   }
     // };
+    var takeMapCard = function (target) {
+      for (var i = 0; i < descriptions.length; i++) {
+        if (target.attributes[0].value === descriptions[i].author.avatar) {
+          var index = i;
+          renderMapCardList(index);
+        }
+      }
+    };
 
     var buttonPinClickHandler = function (evt) {
-      var target = evt.target.parentNode;
+      var target = evt.target;
       // removeClass();
-      if (target.classList.value === 'map__pin' && target.classList.value !== 'map__pin--main') {
-        target.classList.value += ' map__pin--active';
+      if (target.parentNode.classList.value === 'map__pin' && target.parentNode.classList.value !== 'map__pin--main') {
+        target.parentNode.classList.value += ' map__pin--active';
+        takeMapCard(target);
       }
+
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -236,14 +245,15 @@
     var mapPins = map.querySelector('.map__pins');
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
+    // var popupClose = template.querySelector('.popup__close');
+    // var popup = template.querySelector('.popup');
     var noticeForm = document.querySelector('.notice__form');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
-    renderMapCardList();
+
     disableForm(true);
     mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
     map.addEventListener('click', buttonPinClickHandler, true);
-
   });
 })();
