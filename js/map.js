@@ -198,6 +198,13 @@
       }
     };
 
+    // Обработичк выполняется только один раз. включая простой вывод в консоль.
+    // Как сюда передавать новый popup каждый раз, не знаю.
+    var popupCloseClickHandler = function () {
+      var popup = map.querySelector('.popup');
+      popup.style.display = 'none';
+    };
+
     var buttonPinMainMouseupHandler = function () {
       map.classList.remove('map--faded');
       renderMapPinList();
@@ -210,11 +217,10 @@
     // существовал класс pin--active, то у этого элемента класс нужно убрать.
     // var removeClass = function () {
     //   for (var i = 0; i < mapPins.childNodes.length; i++) {
-    //     if(mapPins.childNodes[i].classList.value === 'map__pin--active') {
-    //       return mapPins.childNodes[i].classList.remove('map__pin--active');
-    //     }
+    //     return mapPins.childNodes[i].toggle('map__pin--active', false);
     //   }
     // };
+
     var takeMapCard = function (target) {
       for (var i = 0; i < descriptions.length; i++) {
         if (target.attributes[0].value === descriptions[i].author.avatar) {
@@ -226,12 +232,20 @@
 
     var buttonPinClickHandler = function (evt) {
       var target = evt.target;
+      var popupClose;
+      var popup;
       // removeClass();
-      if (target.parentNode.classList.value === 'map__pin' && target.parentNode.classList.value !== 'map__pin--main') {
-        target.parentNode.classList.value += ' map__pin--active';
-        takeMapCard(target);
-      }
 
+      if (target.parentNode.classList.contains('map__pin') && !target.parentNode.classList.contains('map__pin--main')) {
+        target.parentNode.classList.toggle('map__pin--active');
+        takeMapCard(target);
+
+        popupClose = map.querySelector('.popup__close');
+        popup = map.querySelector('.popup');
+        console.log(popup);
+
+        popupClose.addEventListener('click', popupCloseClickHandler);
+      }
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -245,8 +259,6 @@
     var mapPins = map.querySelector('.map__pins');
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
-    // var popupClose = template.querySelector('.popup__close');
-    // var popup = template.querySelector('.popup');
     var noticeForm = document.querySelector('.notice__form');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
@@ -254,6 +266,6 @@
 
     disableForm(true);
     mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
-    map.addEventListener('click', buttonPinClickHandler, true);
+    map.addEventListener('click', buttonPinClickHandler);
   });
 })();
