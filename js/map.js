@@ -242,7 +242,6 @@
 
         popupClose = map.querySelector('.popup__close');
         popup = map.querySelector('.popup');
-        console.log(popup);
 
         popupClose.addEventListener('click', popupCloseClickHandler);
       }
