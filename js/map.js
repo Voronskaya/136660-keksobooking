@@ -198,12 +198,10 @@
       }
     };
 
-    // Обработичк выполняется только один раз. включая простой вывод в консоль.
-    // Как сюда передавать новый popup каждый раз, не знаю.
-    var popupCloseClickHandler = function () {
-      var popup = map.querySelector('.popup');
-      popup.style.display = 'none';
-    };
+    // var popupCloseClickHandler = function () {
+    //   var popup = map.querySelector('.popup');
+    //   popup.style.display = 'none';
+    // };
 
     var buttonPinMainMouseupHandler = function () {
       map.classList.remove('map--faded');
@@ -232,18 +230,20 @@
 
     var buttonPinClickHandler = function (evt) {
       var target = evt.target;
-      var popupClose;
-      var popup;
-      // removeClass();
+      if (map.querySelector('.popup')) {
+        map.querySelector('.popup').remove();
+      }
 
       if (target.parentNode.classList.contains('map__pin') && !target.parentNode.classList.contains('map__pin--main')) {
         target.parentNode.classList.toggle('map__pin--active');
         takeMapCard(target);
+        // popupClose.addEventListener('click', popupCloseClickHandler);
+      }
+    };
 
-        popupClose = map.querySelector('.popup__close');
-        popup = map.querySelector('.popup');
-
-        popupClose.addEventListener('click', popupCloseClickHandler);
+    var pinKeydownHandler = function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        buttonPinClickHandler(evt);
       }
     };
 
@@ -254,6 +254,8 @@
     var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
     var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
     var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+    // var ESC_KEYCODE = 27;
+    var ENTER_KEYCODE = 13;
     var map = document.querySelector('.map');
     var mapPins = map.querySelector('.map__pins');
     var mapPinMain = map.querySelector('.map__pin--main');
@@ -266,5 +268,6 @@
     disableForm(true);
     mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
     map.addEventListener('click', buttonPinClickHandler);
+    map.addEventListener('keydown', pinKeydownHandler, true);
   });
 })();
