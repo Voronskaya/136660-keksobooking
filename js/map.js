@@ -205,7 +205,13 @@
       disableForm(false);
     };
 
-    var takeMapCard = function (target) {
+    var takeMapCard = function (evt) {
+      var target;
+      if (evt.code) {
+        target = evt.target.childNodes[0];
+      } else if (evt.button === 0) {
+        target = evt.target;
+      }
       for (var i = 0; i < descriptions.length; i++) {
         if (target.getAttribute('src') === descriptions[i].author.avatar) {
           var index = i;
@@ -228,21 +234,20 @@
       }
     };
 
-    var buttonPinClickHandler = function (evt) {
-      var target = evt.target.parentNode;
+    var openPopup = function (evt) {
+      var target;
+      if (evt.keyCode === ENTER_KEYCODE) {
+        target = evt.target;
+      } else {
+        target = evt.target.parentNode;
+      }
+
       if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
         removeClass();
         target.classList.add('map__pin--active');
-        takeMapCard(evt.target);
+        takeMapCard(evt);
       }
       closePopup(evt);
-    };
-
-    // Не получается открыть карточку через ентер
-    var pinKeydownHandler = function (evt) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        buttonPinClickHandler(evt);
-      }
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -265,7 +270,15 @@
 
     disableForm(true);
     mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
-    map.addEventListener('click', buttonPinClickHandler);
-    map.addEventListener('keydown', pinKeydownHandler);
+
+    map.addEventListener('click', function (evt) {
+      openPopup(evt);
+    });
+
+    map.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        openPopup(evt);
+      }
+    });
   });
 })();
