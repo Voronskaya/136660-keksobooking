@@ -198,7 +198,7 @@
       }
     };
 
-    var buttonPinMainMouseupHandler = function () {
+    var showMap = function () {
       map.classList.remove('map--faded');
       renderMapPinList();
       noticeForm.classList.remove('notice__form--disabled');
@@ -226,12 +226,20 @@
         buttons[i].classList.toggle('map__pin--active', false);
       }
     };
+    var popupEscPressHandler = function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        var popup = map.querySelector('.popup');
+        popup.remove();
+        removeClass();
+      }
+    };
 
     var closePopup = function (evt) {
       if (evt.target.classList.contains('popup__close')) {
-        evt.target.parentNode.style.display = 'none';
+        evt.target.parentNode.remove();
         removeClass();
       }
+      map.addEventListener('keydown', popupEscPressHandler);
     };
 
     var openPopup = function (evt) {
@@ -257,7 +265,7 @@
     var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
     var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
     var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-    // var ESC_KEYCODE = 27;
+    var ESC_KEYCODE = 27;
     var ENTER_KEYCODE = 13;
     var map = document.querySelector('.map');
     var mapPins = map.querySelector('.map__pins');
@@ -271,12 +279,12 @@
     disableForm(true);
     mapPinMain.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ENTER_KEYCODE) {
-        buttonPinMainMouseupHandler();
+        showMap();
       }
     });
 
     mapPinMain.addEventListener('mouseup', function () {
-      buttonPinMainMouseupHandler();
+      showMap();
     });
 
     map.addEventListener('click', function (evt) {
