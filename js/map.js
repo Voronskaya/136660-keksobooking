@@ -198,11 +198,6 @@
       }
     };
 
-    // var popupCloseClickHandler = function () {
-    //   var popup = map.querySelector('.popup');
-    //   popup.style.display = 'none';
-    // };
-
     var buttonPinMainMouseupHandler = function () {
       map.classList.remove('map--faded');
       renderMapPinList();
@@ -212,16 +207,10 @@
 
     var takeMapCard = function (target) {
       for (var i = 0; i < descriptions.length; i++) {
-        if (target.attributes[0].value === descriptions[i].author.avatar) {
+        if (target.getAttribute('src') === descriptions[i].author.avatar) {
           var index = i;
           renderMapCardList(index);
         }
-      }
-    };
-
-    var checkIsPopup = function () {
-      if (map.querySelector('.popup')) {
-        map.querySelector('.popup').remove();
       }
     };
 
@@ -232,15 +221,21 @@
       }
     };
 
-    var buttonPinClickHandler = function (evt) {
-      var target = evt.target;
-      checkIsPopup();
-      removeClass();
-      if (target.parentNode.classList.contains('map__pin') && !target.parentNode.classList.contains('map__pin--main')) {
-        target.parentNode.classList.toggle('map__pin--active');
-        takeMapCard(target);
-        // popupClose.addEventListener('click', popupCloseClickHandler);
+    var closePopup = function (evt) {
+      if (evt.target.classList.contains('popup__close')) {
+        evt.target.parentNode.style.display = 'none';
+        removeClass();
       }
+    };
+
+    var buttonPinClickHandler = function (evt) {
+      var target = evt.target.parentNode;
+      if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
+        removeClass();
+        target.classList.add('map__pin--active');
+        takeMapCard(evt.target);
+      }
+      closePopup(evt);
     };
 
     // Не получается открыть карточку через ентер
@@ -271,6 +266,6 @@
     disableForm(true);
     mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
     map.addEventListener('click', buttonPinClickHandler);
-    map.addEventListener('keydown', pinKeydownHandler, true);
+    map.addEventListener('keydown', pinKeydownHandler);
   });
 })();
