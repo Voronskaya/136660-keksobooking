@@ -269,7 +269,15 @@
     var descriptions = createDescription(8);
 
     disableForm(true);
-    mapPinMain.addEventListener('mouseup', buttonPinMainMouseupHandler);
+    mapPinMain.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        buttonPinMainMouseupHandler();
+      }
+    });
+
+    mapPinMain.addEventListener('mouseup', function () {
+      buttonPinMainMouseupHandler();
+    });
 
     map.addEventListener('click', function (evt) {
       openPopup(evt);
