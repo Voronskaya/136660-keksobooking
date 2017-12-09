@@ -226,11 +226,21 @@
         buttons[i].classList.toggle('map__pin--active', false);
       }
     };
+    // Обработчик: закрывает попап, если он открыт и если нажать esc.
+    // Закрывает попап, если в фокусе popup__close и если нажать esc.
+    // Код повторяющийся, как улучшить не придумала.
     var popupEscPressHandler = function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
         var popup = map.querySelector('.popup');
         popup.remove();
         removeClass();
+      }
+
+      if (evt.keyCode === ESC_KEYCODE) {
+        if (map.activeElement === map.classList.contains('popup__close')) {
+          popup.remove();
+          removeClass();
+        }
       }
     };
 
