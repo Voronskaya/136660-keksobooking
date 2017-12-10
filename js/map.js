@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
-    var getAvatarList = function (range) {
+    var getAvatarSources = function (range) {
       var avatars = [];
       var src = 'img/avatars/user0';
       for (var i = 1; i <= range; i++) {
@@ -205,67 +205,56 @@
       disableForm(false);
     };
 
-    var takeMapCard = function (evt) {
-      var target;
-      if (evt.code) {
-        target = evt.target.childNodes[0];
-      } else if (evt.button === 0) {
-        target = evt.target;
-      }
+    var takeMapCard = function (target) {
       for (var i = 0; i < descriptions.length; i++) {
-        if (target.getAttribute('src') === descriptions[i].author.avatar) {
+        if (target.childNodes[0].getAttribute('src') === descriptions[i].author.avatar) {
           var index = i;
           renderMapCardList(index);
         }
       }
     };
 
-    var removeClass = function () {
-      var buttons = mapPins.querySelectorAll('button');
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.toggle('map__pin--active', false);
-      }
-    };
-    // Обработчик: закрывает попап, если он открыт и если нажать esc.
-    // Закрывает попап, если в фокусе popup__close и если нажать esc.
-    // Код повторяющийся, как улучшить не придумала.
-    var popupEscPressHandler = function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        var popup = map.querySelector('.popup');
-        popup.remove();
-        removeClass();
-      }
-
-      if (evt.keyCode === ESC_KEYCODE) {
-        if (map.activeElement === map.classList.contains('popup__close')) {
-          popup.remove();
-          removeClass();
-        }
-      }
+    var activatePin = function (pin) {
+      pin.classList.add('map__pin--active');
     };
 
-    var closePopup = function (evt) {
-      if (evt.target.classList.contains('popup__close')) {
-        evt.target.parentNode.remove();
-        removeClass();
+    var deactivatePin = function () {
+      var activePin = map.querySelector('.map__pin--active');
+      if (activePin) {
+        activePin.classList.remove('map__pin--active');
+      }
+    };
+    // Не знаю как лучше называть
+    var removeCard = function () {
+      var popup = map.querySelector('.popup');
+      popup.remove();
+      deactivatePin();
+    };
+
+    var closePopup = function () {
+      var popupClose = map.querySelector('.popup__close');
+      if (document.activeElement === popupClose) {
+        removeCard();
       }
       map.addEventListener('keydown', popupEscPressHandler);
     };
 
-    var openPopup = function (evt) {
-      var target;
-      if (evt.keyCode === ENTER_KEYCODE) {
-        target = evt.target;
-      } else {
-        target = evt.target.parentNode;
+    var popupEscPressHandler = function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        removeCard();
+        if (map.activeElement === close) {
+          removeCard();
+        }
       }
+    };
 
+    var openPopup = function (target) {
       if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
-        removeClass();
-        target.classList.add('map__pin--active');
-        takeMapCard(evt);
+        deactivatePin();
+        activatePin(target);
+        takeMapCard(target);
       }
-      closePopup(evt);
+      closePopup(target);
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -283,7 +272,7 @@
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
-    var avatars = getAvatarList(8);
+    var avatars = getAvatarSources(8);
     var descriptions = createDescription(8);
 
     disableForm(true);
@@ -298,12 +287,12 @@
     });
 
     map.addEventListener('click', function (evt) {
-      openPopup(evt);
+      openPopup(evt.target.parentNode);
     });
 
     map.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ENTER_KEYCODE) {
-        openPopup(evt);
+        openPopup(evt.target);
       }
     });
   });
