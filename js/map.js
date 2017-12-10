@@ -205,9 +205,9 @@
       disableForm(false);
     };
 
-    var takeMapCard = function (target) {
+    var takeMapCard = function (src) {
       for (var i = 0; i < descriptions.length; i++) {
-        if (target.childNodes[0].getAttribute('src') === descriptions[i].author.avatar) {
+        if (src === descriptions[i].author.avatar) {
           var index = i;
           renderMapCardList(index);
         }
@@ -252,7 +252,7 @@
       if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
         deactivatePin();
         activatePin(target);
-        takeMapCard(target);
+        takeMapCard(target.childNodes[0].getAttribute('src'));
       }
       closePopup(target);
     };
