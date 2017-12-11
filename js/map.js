@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
-    var getAvatarSources = function (range) {
+    var getAvatarList = function (range) {
       var avatars = [];
       var src = 'img/avatars/user0';
       for (var i = 1; i <= range; i++) {
@@ -224,37 +224,16 @@
         activePin.classList.remove('map__pin--active');
       }
     };
-    // Не знаю как лучше называть
-    var removeCard = function () {
-      var popup = map.querySelector('.popup');
+
+    var openPopup = function (pin, src) {
+      deactivatePin();
+      activatePin(pin);
+      takeMapCard(src);
+    };
+
+    var closePopup = function (popup) {
       popup.remove();
       deactivatePin();
-    };
-
-    var closePopup = function () {
-      var popupClose = map.querySelector('.popup__close');
-      if (document.activeElement === popupClose) {
-        removeCard();
-      }
-      map.addEventListener('keydown', popupEscPressHandler);
-    };
-
-    var popupEscPressHandler = function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        removeCard();
-        if (map.activeElement === close) {
-          removeCard();
-        }
-      }
-    };
-
-    var openPopup = function (target) {
-      if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
-        deactivatePin();
-        activatePin(target);
-        takeMapCard(target.childNodes[0].getAttribute('src'));
-      }
-      closePopup(target);
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -272,27 +251,40 @@
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
-    var avatars = getAvatarSources(8);
+    var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
 
     disableForm(true);
-    mapPinMain.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        showMap();
-      }
-    });
 
     mapPinMain.addEventListener('mouseup', function () {
       showMap();
     });
 
     map.addEventListener('click', function (evt) {
-      openPopup(evt.target.parentNode);
+      var target = evt.target;
+      if (target.classList.contains('popup__close')) {
+        closePopup(target.parentNode);
+      } else {
+        while (target.classList && !target.classList.contains('map__pin')) {
+          target = target.parentNode;
+        }
+        if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
+          openPopup(target, evt.target.getAttribute('src'));
+        }
+      }
     });
 
     map.addEventListener('keydown', function (evt) {
+      var target = evt.target;
+      var img = target.childNodes[0];
+      var popup = map.querySelector('.popup');
       if (evt.keyCode === ENTER_KEYCODE) {
-        openPopup(evt.target);
+        if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
+          openPopup(target, img.getAttribute('src'));
+        }
+      }
+      if (evt.keyCode === ESC_KEYCODE) {
+        closePopup(popup);
       }
     });
   });
