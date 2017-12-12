@@ -245,6 +245,27 @@
       } else if (evt.target === timeout) {
         timein.selectedIndex = timeout.selectedIndex;
       }
+      // другое решение:
+      // this.timein.value = evt.target.value
+      // this.timeout.value = evt.target.value
+
+      var type = noticeForm.elements['type'];
+      var price = noticeForm.elements['price'];
+      var indexFlat = 1;
+      var indexBungalo = 0;
+      var indexHouse = 2;
+
+      if (evt.target === type) {
+        if (type.selectedIndex === indexBungalo) {
+          price.setAttribute('min', '1000');
+        } else if (type.selectedIndex === indexFlat) {
+          price.setAttribute('min', '0');
+        } else if (type.selectedIndex === indexHouse) {
+          price.setAttribute('min', '5000');
+        } else {
+          price.setAttribute('min', '10000');
+        }
+      }
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -261,8 +282,6 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
-    // var timein = noticeForm.querySelector('#timein');
-    // var timeout = noticeForm.querySelector('#timeout');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
