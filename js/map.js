@@ -251,19 +251,28 @@
 
       var type = noticeForm.elements['type'];
       var price = noticeForm.elements['price'];
-      var indexFlat = 1;
       var indexBungalo = 0;
+      var indexFlat = 1;
       var indexHouse = 2;
+      var indexPlace = 3;
 
       if (evt.target === type) {
         if (type.selectedIndex === indexBungalo) {
-          price.setAttribute('min', '1000');
+          price.value = '0';
+          price.min = '0';
+          // price.setAttribute('min', '0');
         } else if (type.selectedIndex === indexFlat) {
-          price.setAttribute('min', '0');
+          price.value = '1000';
+          price.min = '1000';
+          // price.setAttribute('min', '1000');
         } else if (type.selectedIndex === indexHouse) {
-          price.setAttribute('min', '5000');
-        } else {
-          price.setAttribute('min', '10000');
+          price.value = '5000';
+          price.min = '5000';
+          // price.setAttribute('min', '5000');
+        } else if (type.selectedIndex === indexPlace) {
+          price.value = '10000';
+          price.min = '10000';
+          // price.setAttribute('min', '10000');
         }
       }
     };
