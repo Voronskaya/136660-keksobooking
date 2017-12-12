@@ -236,6 +236,17 @@
       deactivatePin();
     };
 
+    var selectTimeChangeHandler = function (evt) {
+      var timein = noticeForm.elements['timein'];
+      var timeout = noticeForm.elements['timeout'];
+
+      if (evt.target === timein) {
+        timeout.selectedIndex = timein.selectedIndex;
+      } else if (evt.target === timeout) {
+        timein.selectedIndex = timeout.selectedIndex;
+      }
+    };
+
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
       'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
       'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
@@ -250,6 +261,8 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
+    // var timein = noticeForm.querySelector('#timein');
+    // var timeout = noticeForm.querySelector('#timeout');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
@@ -265,27 +278,28 @@
       if (target.classList.contains('popup__close')) {
         closePopup(target.parentNode);
       } else {
-        while (target.classList && !target.classList.contains('map__pin')) {
+        if (target.tagName === 'IMG') {
           target = target.parentNode;
         }
         if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
-          openPopup(target, evt.target.getAttribute('src'));
+          var imgElement = target.querySelector('img');
+          openPopup(target, imgElement .getAttribute('src'));
         }
       }
     });
 
     map.addEventListener('keydown', function (evt) {
-      var target = evt.target;
-      var img = target.childNodes[0];
-      var popup = map.querySelector('.popup');
       if (evt.keyCode === ENTER_KEYCODE) {
-        if (target.classList.contains('map__pin') && !target.classList.contains('map__pin--main')) {
-          openPopup(target, img.getAttribute('src'));
+        var target = evt.target;
+        if (target.classList.contains('map__pin--main')) {
+          showMap();
         }
       }
       if (evt.keyCode === ESC_KEYCODE) {
+        var popup = map.querySelector('.popup');
         closePopup(popup);
       }
     });
+    noticeForm.addEventListener('change', selectTimeChangeHandler);
   });
 })();
