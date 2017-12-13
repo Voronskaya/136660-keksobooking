@@ -237,6 +237,8 @@
     };
 
     var selectTimeChangeHandler = function (evt) {
+
+      // Синхронизация времени заезда и выезда
       var timein = noticeForm.elements['timein'];
       var timeout = noticeForm.elements['timeout'];
 
@@ -249,29 +251,21 @@
       // this.timein.value = evt.target.value
       // this.timeout.value = evt.target.value
 
+      // Синхронизация жилья и мин.цены
       var type = noticeForm.elements['type'];
       var price = noticeForm.elements['price'];
-      var indexBungalo = 0;
-      var indexFlat = 1;
-      var indexHouse = 2;
-      var indexPlace = 3;
 
-      if (evt.target === type) {
-        if (type.selectedIndex === indexBungalo) {
-          price.min = '0';
-          // price.setAttribute('min', '0');
-        } else if (type.selectedIndex === indexFlat) {
-          price.min = '1000';
-          // price.setAttribute('min', '1000');
-        } else if (type.selectedIndex === indexHouse) {
-          price.min = '5000';
-          // price.setAttribute('min', '5000');
-        } else if (type.selectedIndex === indexPlace) {
-          price.min = '10000';
-          // price.setAttribute('min', '10000');
-        }
+      if (type.value === 'bungalo') {
+        price.min = '0';
+      } else if (type.value === 'flat') {
+        price.min = '1000';
+      } else if (type.value === 'house') {
+        price.min = '5000';
+      } else if (type.value === 'palace') {
+        price.min = '10000';
       }
 
+      // Определение кол-ва гостей в зависимости от кол-ва комнат
       // var roomNumber = noticeForm.elements['room_number'];
       // var capacity = noticeForm.elements['capacity'];
       // if (evt.target === roomNumber) {
@@ -287,7 +281,6 @@
       //   }
       // }
     };
-
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
       'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
