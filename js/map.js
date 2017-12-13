@@ -258,24 +258,36 @@
 
       if (evt.target === type) {
         if (type.selectedIndex === indexBungalo) {
-          price.value = '0';
           price.min = '0';
           // price.setAttribute('min', '0');
         } else if (type.selectedIndex === indexFlat) {
-          price.value = '1000';
           price.min = '1000';
           // price.setAttribute('min', '1000');
         } else if (type.selectedIndex === indexHouse) {
-          price.value = '5000';
           price.min = '5000';
           // price.setAttribute('min', '5000');
         } else if (type.selectedIndex === indexPlace) {
-          price.value = '10000';
           price.min = '10000';
           // price.setAttribute('min', '10000');
         }
       }
+
+      // var roomNumber = noticeForm.elements['room_number'];
+      // var capacity = noticeForm.elements['capacity'];
+      // if (evt.target === roomNumber) {
+      //   console.log(roomNumber.selectedIndex);
+      //   if (roomNumber.options[0].selected) {
+      //     // capacity.options[0].style.display = 'none';
+      //     // capacity.options[1].style.display = 'none';
+      //     // capacity.options[3].style.display = 'none';
+      //     // capacity.options[0].text = '';
+      //     console.log('ноль')
+      //   } else if (roomNumber.options[1].seleted) {
+      //     console.log('один');
+      //   }
+      // }
     };
+
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
       'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
@@ -291,6 +303,7 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
+    // var roomNumber = noticeForm.querySelectorAll('.room_number');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
