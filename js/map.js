@@ -301,6 +301,12 @@
       showMap();
     });
 
+    mapPinMain.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        showMap();
+      }
+    });
+
     map.addEventListener('click', function (evt) {
       var target = evt.target;
       if (target.classList.contains('popup__close')) {
@@ -316,16 +322,12 @@
       }
     });
 
-    map.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        var target = evt.target;
-        if (target.classList.contains('map__pin--main')) {
-          showMap();
-        }
-      }
+    document.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
         var popup = map.querySelector('.popup');
-        closePopup(popup);
+        if (popup) {
+          closePopup(popup);
+        }
       }
     });
     noticeForm.addEventListener('change', selectTimeChangeHandler);
