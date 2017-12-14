@@ -1,4 +1,3 @@
-
 'use strict';
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
@@ -237,6 +236,49 @@
       deactivatePin();
     };
 
+    var selectTimeChangeHandler = function (evt) {
+
+      // Синхронизация времени заезда и выезда
+      var timein = noticeForm.elements['timein'];
+      var timeout = noticeForm.elements['timeout'];
+
+      if (evt.target === timein) {
+        timeout.selectedIndex = timein.selectedIndex;
+      } else if (evt.target === timeout) {
+        timein.selectedIndex = timeout.selectedIndex;
+      }
+      // другое решение:
+      // this.timein.value = evt.target.value
+      // this.timeout.value = evt.target.value
+
+      // Синхронизация жилья и мин.цены
+      var type = noticeForm.elements['type'];
+      var price = noticeForm.elements['price'];
+
+      if (type.value === 'bungalo') {
+        price.min = '0';
+      } else if (type.value === 'flat') {
+        price.min = '1000';
+      } else if (type.value === 'house') {
+        price.min = '5000';
+      } else if (type.value === 'palace') {
+        price.min = '10000';
+      }
+
+      // Определение кол-ва гостей в зависимости от кол-ва комнат
+      // var roomNumber = noticeForm.elements['room_number'];
+      // var capacity = noticeForm.elements['capacity'];
+      // if (roomNumber.options[0].selected) {
+      //   // capacity.options[0].style.display = 'none';
+      //   // capacity.options[1].style.display = 'none';
+      //   // capacity.options[3].style.display = 'none';
+      //   // capacity.options[0].text = '';
+      //   console.log('ноль')
+      // } else if (roomNumber.options[1].seleted) {
+      //   console.log('один');
+      // }
+    };
+
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
       'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
       'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
@@ -251,6 +293,7 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
+    // var roomNumber = noticeForm.querySelectorAll('.room_number');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
@@ -290,5 +333,6 @@
         }
       }
     });
+    noticeForm.addEventListener('change', selectTimeChangeHandler);
   });
 })();
