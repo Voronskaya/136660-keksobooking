@@ -236,17 +236,6 @@
       deactivatePin();
     };
 
-    // var syncTimeinTimeout = function (evt) {
-    //   var timein = noticeForm.elements['timein'];
-    //   var timeout = noticeForm.elements['timeout'];
-
-    //   if (evt.target === timein) {
-    //     timeout.selectedIndex = timein.selectedIndex;
-    //   } else if (evt.target === timeout) {
-    //     timein.selectedIndex = timeout.selectedIndex;
-    //   }
-    // };
-
     // Синхронизация времени заезда, выезда
     var timeinChangeHandler = function () {
       noticeForm.elements['timeout'].selectedIndex = noticeForm.elements['timein'].selectedIndex;
@@ -256,28 +245,25 @@
       noticeForm.elements['timein'].selectedIndex = noticeForm.elements['timeout'].selectedIndex;
     };
 
-     // Синхронизация типа жилья и цены
-    var COST_APARTMENT = {
-      bungalo: '0',
-      flat: '1000',
-      house: '5000',
-      palace: '10000'
-    };
+    // Синхронизация типа жилья и цены
 
-    var syncTypeHousePrice = function (typeHouse, price) {
+    var syncTypeHousePrice = function (typeHouse) {
+      var minPrice = noticeForm.elements['price'];
       if (typeHouse === 'bungalo') {
-        price.min = COST_APARTMENT.bungalo;
+        minPrice.setAttribute('min', COST_APARTMENT.bungalo);
       } else if (typeHouse === 'flat') {
-        return price.min = COST_APARTMENT.flat;
+        minPrice.setAttribute('min', COST_APARTMENT.flat);
       } else if (typeHouse === 'house') {
-        price.min = COST_APARTMENT.house;
+        minPrice.setAttribute('min', COST_APARTMENT.house);
       } else {
-        price.min = COST_APARTMENT.palace;
+        minPrice.setAttribute('min', COST_APARTMENT.palace);
       }
     };
 
-     // Синхронизация комнат и гостей. не знаю как делать
-    var syncQuantityRoomsGuests = function (evt) {
+    // Синхронизация комнат и гостей.
+    // Не знаю как делать. Не работает.
+
+    var syncQuantityRoomsGuests = function () {
       // if (roomNumber.options[0].selected) {
       //   console.log('zero')
       //   capacity.options[0].style.display = 'none';
@@ -299,6 +285,8 @@
       //   capacity.options[2].style.display = 'none';
       //   capacity.options[3].style.display = 'block';
       // }
+
+      // console.log(roomNumber);
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -310,12 +298,17 @@
     var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
     var ESC_KEYCODE = 27;
     var ENTER_KEYCODE = 13;
+    var COST_APARTMENT = {
+      bungalo: '0',
+      flat: '1000',
+      house: '5000',
+      palace: '10000'
+    };
     var map = document.querySelector('.map');
     var mapPins = map.querySelector('.map__pins');
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
-    var priceHousing = noticeForm.querySelector('#price');
     // var roomNumber = noticeForm.querySelectorAll('.room_number');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
@@ -361,10 +354,10 @@
     noticeForm.elements['timeout'].addEventListener('change', timeoutChangeHandler);
 
     noticeForm.elements['type'].addEventListener('change', function () {
-      syncTypeHousePrice(noticeForm.elements['type'].value, priceHousing);
+      syncTypeHousePrice(noticeForm.elements['type'].value);
     });
-    noticeForm.elements['room_number'].addEventListener('change', function (evt) {
-      syncQuantityRoomsGuests(evt);
+    noticeForm.elements['room_number'].addEventListener('change', function () {
+      syncQuantityRoomsGuests();
     });
   });
 })();
