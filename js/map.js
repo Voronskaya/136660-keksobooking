@@ -236,46 +236,68 @@
       deactivatePin();
     };
 
-    var selectTimeChangeHandler = function (evt) {
+    // var syncTimeinTimeout = function (evt) {
+    //   var timein = noticeForm.elements['timein'];
+    //   var timeout = noticeForm.elements['timeout'];
 
-      // Синхронизация времени заезда и выезда
-      var timein = noticeForm.elements['timein'];
-      var timeout = noticeForm.elements['timeout'];
+    //   if (evt.target === timein) {
+    //     timeout.selectedIndex = timein.selectedIndex;
+    //   } else if (evt.target === timeout) {
+    //     timein.selectedIndex = timeout.selectedIndex;
+    //   }
+    // };
 
-      if (evt.target === timein) {
-        timeout.selectedIndex = timein.selectedIndex;
-      } else if (evt.target === timeout) {
-        timein.selectedIndex = timeout.selectedIndex;
+    // Синхронизация времени заезда, выезда
+    var timeinChangeHandler = function () {
+      noticeForm.elements['timeout'].selectedIndex = noticeForm.elements['timein'].selectedIndex;
+    };
+
+    var timeoutChangeHandler = function () {
+      noticeForm.elements['timein'].selectedIndex = noticeForm.elements['timeout'].selectedIndex;
+    };
+
+     // Синхронизация типа жилья и цены
+    var COST_APARTMENT = {
+      bungalo: '0',
+      flat: '1000',
+      house: '5000',
+      palace: '10000'
+    };
+
+    var syncTypeHousePrice = function (typeHouse, price) {
+      if (typeHouse === 'bungalo') {
+        price.min = COST_APARTMENT.bungalo;
+      } else if (typeHouse === 'flat') {
+        return price.min = COST_APARTMENT.flat;
+      } else if (typeHouse === 'house') {
+        price.min = COST_APARTMENT.house;
+      } else {
+        price.min = COST_APARTMENT.palace;
       }
-      // другое решение:
-      // this.timein.value = evt.target.value
-      // this.timeout.value = evt.target.value
+    };
 
-      // Синхронизация жилья и мин.цены
-      var type = noticeForm.elements['type'];
-      var price = noticeForm.elements['price'];
-
-      if (type.value === 'bungalo') {
-        price.min = '0';
-      } else if (type.value === 'flat') {
-        price.min = '1000';
-      } else if (type.value === 'house') {
-        price.min = '5000';
-      } else if (type.value === 'palace') {
-        price.min = '10000';
-      }
-
-      // Определение кол-ва гостей в зависимости от кол-ва комнат
-      // var roomNumber = noticeForm.elements['room_number'];
-      // var capacity = noticeForm.elements['capacity'];
+     // Синхронизация комнат и гостей. не знаю как делать
+    var syncQuantityRoomsGuests = function (evt) {
       // if (roomNumber.options[0].selected) {
-      //   // capacity.options[0].style.display = 'none';
-      //   // capacity.options[1].style.display = 'none';
-      //   // capacity.options[3].style.display = 'none';
+      //   console.log('zero')
+      //   capacity.options[0].style.display = 'none';
+      //   capacity.options[1].style.display = 'none';
+      //   capacity.options[3].style.display = 'none';
       //   // capacity.options[0].text = '';
-      //   console.log('ноль')
-      // } else if (roomNumber.options[1].seleted) {
-      //   console.log('один');
+      // } else if (roomNumber.options[1].selected) {
+      //   console.log('one')
+      //   capacity.options[1].style.display = 'block';
+      // } else if (roomNumber.options[2].selected) {
+      //   console.log('two')
+      //   capacity.options[0].style.display = 'block';
+      //   capacity.options[2].style.display = 'block';
+      //   capacity.options[3].style.display = 'none';
+      // } else if (roomNumber.options[3].selected) {
+
+      //   capacity.options[0].style.display = 'none';
+      //   capacity.options[1].style.display = 'none';
+      //   capacity.options[2].style.display = 'none';
+      //   capacity.options[3].style.display = 'block';
       // }
     };
 
@@ -293,6 +315,7 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
+    var priceHousing = noticeForm.querySelector('#price');
     // var roomNumber = noticeForm.querySelectorAll('.room_number');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
@@ -333,6 +356,15 @@
         }
       }
     });
-    noticeForm.addEventListener('change', selectTimeChangeHandler);
+
+    noticeForm.elements['timein'].addEventListener('change', timeinChangeHandler);
+    noticeForm.elements['timeout'].addEventListener('change', timeoutChangeHandler);
+
+    noticeForm.elements['type'].addEventListener('change', function () {
+      syncTypeHousePrice(noticeForm.elements['type'].value, priceHousing);
+    });
+    noticeForm.elements['room_number'].addEventListener('change', function (evt) {
+      syncQuantityRoomsGuests(evt);
+    });
   });
 })();
