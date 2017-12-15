@@ -267,24 +267,34 @@
     // Нужна какая-то доп проверка, чтобы блочило список изначально.
 
     var syncQuantityRoomsGuests = function () {
+      var capacity = noticeForm.elements['capacity'];
+
       for (var i = 0; i < capacity.options.length; i++) {
         var guests = capacity.options[i].value;
+        var quantityRooms = noticeForm.elements['room_number'].value;
         capacity.options[i].setAttribute('hidden', true);
 
-        if (roomNumber.value === '1' && guests === '1') {
+        if (quantityRooms === '1' && guests === '1') {
           capacity.options[i].selected = true;
         }
-        if (roomNumber.value === '100' && guests === '0') {
+        if (quantityRooms === '100' && guests === '0') {
           capacity.options[i].selected = true;
         }
-        if (roomNumber.value === '2' && guests === '1' || roomNumber.value === '2' && guests === '2') {
+        if (quantityRooms === '2' && guests === '1' || quantityRooms === '2' && guests === '2') {
           capacity.options[i].removeAttribute('hidden');
           capacity.options[i].selected = true;
         }
-        if (roomNumber.value === '3' && guests === '1' || roomNumber.value === '3' && guests === '2' || roomNumber.value === '3' && guests === '3') {
+        if (quantityRooms === '3' && guests === '1' || quantityRooms === '3' && guests === '2' || quantityRooms === '3' && guests === '3') {
           capacity.options[i].removeAttribute('hidden');
           capacity.options[i].selected = true;
         }
+      }
+    };
+
+    // Показываю ошибку: красная рамка
+    var showErrorForm = function (itemForm) {
+      if (!itemForm.validity.valid) {
+        itemForm.style.borderColor = 'red';
       }
     };
 
@@ -308,9 +318,8 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
-    var roomNumber = noticeForm.querySelector('#room_number');
-    var capacity = noticeForm.querySelector('#capacity');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
+    var publishSubmit = noticeForm.querySelector('.form__submit');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
 
@@ -358,6 +367,47 @@
     });
     noticeForm.elements['room_number'].addEventListener('change', function () {
       syncQuantityRoomsGuests();
+    });
+
+    // Проверка на валидацию заголовка
+
+    noticeForm.elements['title'].addEventListener('invalid', function () {
+      var title = noticeForm.elements['title'];
+      var minValue = noticeForm.elements['title'].getAttribute('minlength');
+      var maxValue = noticeForm.elements['title'].getAttribute('minlength');
+      if (title.validity.tooShort) {
+        title.setCustomValidity('Минимальная длина заголовка ' + minValue + ' символов.');
+      } else if (title.validity.tooLong) {
+        title.setCustomValidity('Максимальная длина заголовка ' + maxValue + ' символов.');
+      } else if (title.validity.valueMissing) {
+        title.setCustomValidity('Заполните поле!');
+      } else {
+        title.setCustomValidity('');
+      }
+    });
+
+    // Проверка на валидацию цены
+
+    noticeForm.elements['price'].addEventListener('invalid', function () {
+      var price = noticeForm.elements['price'];
+      if (price.validity.rangeUnderflow) {
+        price.setCustomValidity('Минимальная цена ' + price.getAttribute('min'));
+      } else if (price.validity.rangeOverflow) {
+        price.setCustomValidity('Максимальная цена ' + price.getAttribute('max'));
+      } else if (price.validity.valueMissing) {
+        price.setCustomValidity('Поле не должно быть пустым!');
+      } else {
+        price.setCustomValidity('');
+      }
+    });
+
+    // Визуализация ошибок при отправке формы
+    // Есть баг: когда окно открылось, если не менять(не трогать) значения поля "тип жилья",
+    // которое стоит по умолчанию (квартира), то при отправке форма пропускает
+    // любую цену. Не знаю как исправить.
+    publishSubmit.addEventListener('click', function () {
+      showErrorForm(noticeForm.elements['title']);
+      showErrorForm(noticeForm.elements['price']);
     });
   });
 })();
