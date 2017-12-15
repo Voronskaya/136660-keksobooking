@@ -260,33 +260,32 @@
       }
     };
 
-    // Синхронизация комнат и гостей.
-    // Не знаю как делать. Не работает.
+    // Синхронизация комнат и гостей. Нет зависимости от evt.target.
+    // Есть баг. Не обойти. Событие change реагирует только на изменение значения поля.
+    // Когда окно открылось, если значение поля "Одна комната" не менять (оно стоит по умолч.),
+    // то будет доступен список любого кол-ва гостей.
+    // Нужна какая-то доп проверка, чтобы блочило список изначально.
 
     var syncQuantityRoomsGuests = function () {
-      // if (roomNumber.options[0].selected) {
-      //   console.log('zero')
-      //   capacity.options[0].style.display = 'none';
-      //   capacity.options[1].style.display = 'none';
-      //   capacity.options[3].style.display = 'none';
-      //   // capacity.options[0].text = '';
-      // } else if (roomNumber.options[1].selected) {
-      //   console.log('one')
-      //   capacity.options[1].style.display = 'block';
-      // } else if (roomNumber.options[2].selected) {
-      //   console.log('two')
-      //   capacity.options[0].style.display = 'block';
-      //   capacity.options[2].style.display = 'block';
-      //   capacity.options[3].style.display = 'none';
-      // } else if (roomNumber.options[3].selected) {
+      for (var i = 0; i < capacity.options.length; i++) {
+        var guests = capacity.options[i].value;
+        capacity.options[i].setAttribute('hidden', true);
 
-      //   capacity.options[0].style.display = 'none';
-      //   capacity.options[1].style.display = 'none';
-      //   capacity.options[2].style.display = 'none';
-      //   capacity.options[3].style.display = 'block';
-      // }
-
-      // console.log(roomNumber);
+        if (roomNumber.value === '1' && guests === '1') {
+          capacity.options[i].selected = true;
+        }
+        if (roomNumber.value === '100' && guests === '0') {
+          capacity.options[i].selected = true;
+        }
+        if (roomNumber.value === '2' && guests === '1' || roomNumber.value === '2' && guests === '2') {
+          capacity.options[i].removeAttribute('hidden');
+          capacity.options[i].selected = true;
+        }
+        if (roomNumber.value === '3' && guests === '1' || roomNumber.value === '3' && guests === '2' || roomNumber.value === '3' && guests === '3') {
+          capacity.options[i].removeAttribute('hidden');
+          capacity.options[i].selected = true;
+        }
+      }
     };
 
     var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира',
@@ -309,7 +308,8 @@
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
-    // var roomNumber = noticeForm.querySelectorAll('.room_number');
+    var roomNumber = noticeForm.querySelector('#room_number');
+    var capacity = noticeForm.querySelector('#capacity');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
