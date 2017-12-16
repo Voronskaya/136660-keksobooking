@@ -260,18 +260,21 @@
       }
     };
 
-    // Синхронизация комнат и гостей. Нет зависимости от evt.target.
-    // Есть баг. Не обойти. Событие change реагирует только на изменение значения поля.
-    // Когда окно открылось, если значение поля "Одна комната" не менять (оно стоит по умолч.),
-    // то будет доступен список любого кол-ва гостей.
-    // Нужна какая-то доп проверка, чтобы блочило список изначально.
-
-    var syncQuantityRoomsGuests = function () {
+    var hideCapacity = function () {
+      for (var i = 0; i < noticeForm.elements['capacity'].length; i++) {
+        noticeForm.elements['capacity'].options[i].setAttribute('hidden', true);
+      }
+    };
+    // Добавила параметр. Разница в одну строчку. Не совсем понимаю какое преимущество
+    // при использовании evt.target.value именно в этой задаче.
+    // С selectIndex получаются заморочки, если нужно
+    // в списке оставить несколько пунктов. Мой вариант работает. Бага нет.
+    var syncQuantityRoomsGuests = function (quantityRooms) {
       var capacity = noticeForm.elements['capacity'];
 
       for (var i = 0; i < capacity.options.length; i++) {
         var guests = capacity.options[i].value;
-        var quantityRooms = noticeForm.elements['room_number'].value;
+        // var quantityRooms = noticeForm.elements['room_number'].value;
         capacity.options[i].setAttribute('hidden', true);
 
         if (quantityRooms === '1' && guests === '1') {
@@ -291,10 +294,12 @@
       }
     };
 
-    // Показываю ошибку: красная рамка
-    var showErrorForm = function (itemForm) {
-      if (!itemForm.validity.valid) {
-        itemForm.style.borderColor = 'red';
+    var publishSubmitClickHandler = function () {
+      var inputs = noticeForm.querySelectorAll('input');
+      for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].checkValidity() === false) {
+          inputs[i].style.borderColor = 'red';
+        }
       }
     };
 
@@ -324,6 +329,7 @@
     var descriptions = createDescription(8);
 
     disableForm(true);
+    hideCapacity();
 
     mapPinMain.addEventListener('mouseup', function () {
       showMap();
@@ -365,8 +371,8 @@
     noticeForm.elements['type'].addEventListener('change', function () {
       syncTypeHousePrice(noticeForm.elements['type'].value);
     });
-    noticeForm.elements['room_number'].addEventListener('change', function () {
-      syncQuantityRoomsGuests();
+    noticeForm.elements['room_number'].addEventListener('change', function (evt) {
+      syncQuantityRoomsGuests(evt.target.value);
     });
 
     // Проверка на валидацию заголовка
@@ -401,13 +407,6 @@
       }
     });
 
-    // Визуализация ошибок при отправке формы
-    // Есть баг: когда окно открылось, если не менять(не трогать) значения поля "тип жилья",
-    // которое стоит по умолчанию (квартира), то при отправке форма пропускает
-    // любую цену. Не знаю как исправить.
-    publishSubmit.addEventListener('click', function () {
-      showErrorForm(noticeForm.elements['title']);
-      showErrorForm(noticeForm.elements['price']);
-    });
+    publishSubmit.addEventListener('click', publishSubmitClickHandler);
   });
 })();
