@@ -236,43 +236,69 @@
       deactivatePin();
     };
 
-    var selectTimeChangeHandler = function (evt) {
-      var timein = noticeForm.elements['timein'];
-      var timeout = noticeForm.elements['timeout'];
+    // Синхронизация времени заезда, выезда
+    var timeinChangeHandler = function () {
+      noticeForm.elements['timeout'].selectedIndex = noticeForm.elements['timein'].selectedIndex;
+    };
 
-      if (evt.target === timein) {
-        timeout.selectedIndex = timein.selectedIndex;
-      } else if (evt.target === timeout) {
-        timein.selectedIndex = timeout.selectedIndex;
+    var timeoutChangeHandler = function () {
+      noticeForm.elements['timein'].selectedIndex = noticeForm.elements['timeout'].selectedIndex;
+    };
+
+    // Синхронизация типа жилья и цены
+
+    var syncTypeHousePrice = function (typeHouse) {
+      var minPrice = noticeForm.elements['price'];
+      if (typeHouse === 'bungalo') {
+        minPrice.setAttribute('min', COST_APARTMENT.bungalo);
+      } else if (typeHouse === 'flat') {
+        minPrice.setAttribute('min', COST_APARTMENT.flat);
+      } else if (typeHouse === 'house') {
+        minPrice.setAttribute('min', COST_APARTMENT.house);
+      } else {
+        minPrice.setAttribute('min', COST_APARTMENT.palace);
       }
-      // другое решение:
-      // this.timein.value = evt.target.value
-      // this.timeout.value = evt.target.value
+    };
 
-      var type = noticeForm.elements['type'];
-      var price = noticeForm.elements['price'];
-      var indexBungalo = 0;
-      var indexFlat = 1;
-      var indexHouse = 2;
-      var indexPlace = 3;
+    var hideCapacity = function () {
+      for (var i = 0; i < noticeForm.elements['capacity'].length; i++) {
+        noticeForm.elements['capacity'].options[i].setAttribute('hidden', true);
+      }
+    };
+    // Добавила параметр. Разница в одну строчку. Не совсем понимаю какое преимущество
+    // при использовании evt.target.value именно в этой задаче.
+    // С selectIndex получаются заморочки, если нужно
+    // в списке оставить несколько пунктов. Мой вариант работает. Бага нет.
+    var syncQuantityRoomsGuests = function (quantityRooms) {
+      var capacity = noticeForm.elements['capacity'];
 
-      if (evt.target === type) {
-        if (type.selectedIndex === indexBungalo) {
-          price.value = '0';
-          price.min = '0';
-          // price.setAttribute('min', '0');
-        } else if (type.selectedIndex === indexFlat) {
-          price.value = '1000';
-          price.min = '1000';
-          // price.setAttribute('min', '1000');
-        } else if (type.selectedIndex === indexHouse) {
-          price.value = '5000';
-          price.min = '5000';
-          // price.setAttribute('min', '5000');
-        } else if (type.selectedIndex === indexPlace) {
-          price.value = '10000';
-          price.min = '10000';
-          // price.setAttribute('min', '10000');
+      for (var i = 0; i < capacity.options.length; i++) {
+        var guests = capacity.options[i].value;
+        // var quantityRooms = noticeForm.elements['room_number'].value;
+        capacity.options[i].setAttribute('hidden', true);
+
+        if (quantityRooms === '1' && guests === '1') {
+          capacity.options[i].selected = true;
+        }
+        if (quantityRooms === '100' && guests === '0') {
+          capacity.options[i].selected = true;
+        }
+        if (quantityRooms === '2' && guests === '1' || quantityRooms === '2' && guests === '2') {
+          capacity.options[i].removeAttribute('hidden');
+          capacity.options[i].selected = true;
+        }
+        if (quantityRooms === '3' && guests === '1' || quantityRooms === '3' && guests === '2' || quantityRooms === '3' && guests === '3') {
+          capacity.options[i].removeAttribute('hidden');
+          capacity.options[i].selected = true;
+        }
+      }
+    };
+
+    var publishSubmitClickHandler = function () {
+      var inputs = noticeForm.querySelectorAll('input');
+      for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].checkValidity() === false) {
+          inputs[i].style.borderColor = 'red';
         }
       }
     };
@@ -286,16 +312,24 @@
     var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
     var ESC_KEYCODE = 27;
     var ENTER_KEYCODE = 13;
+    var COST_APARTMENT = {
+      bungalo: '0',
+      flat: '1000',
+      house: '5000',
+      palace: '10000'
+    };
     var map = document.querySelector('.map');
     var mapPins = map.querySelector('.map__pins');
     var mapPinMain = map.querySelector('.map__pin--main');
     var template = document.querySelector('template').content;
     var noticeForm = document.querySelector('.notice__form');
     var fieldsets = noticeForm.querySelectorAll('fieldset');
+    var publishSubmit = noticeForm.querySelector('.form__submit');
     var avatars = getAvatarList(8);
     var descriptions = createDescription(8);
 
     disableForm(true);
+    hideCapacity();
 
     mapPinMain.addEventListener('mouseup', function () {
       showMap();
@@ -330,6 +364,49 @@
         }
       }
     });
-    noticeForm.addEventListener('change', selectTimeChangeHandler);
+
+    noticeForm.elements['timein'].addEventListener('change', timeinChangeHandler);
+    noticeForm.elements['timeout'].addEventListener('change', timeoutChangeHandler);
+
+    noticeForm.elements['type'].addEventListener('change', function () {
+      syncTypeHousePrice(noticeForm.elements['type'].value);
+    });
+    noticeForm.elements['room_number'].addEventListener('change', function (evt) {
+      syncQuantityRoomsGuests(evt.target.value);
+    });
+
+    // Проверка на валидацию заголовка
+
+    noticeForm.elements['title'].addEventListener('invalid', function () {
+      var title = noticeForm.elements['title'];
+      var minValue = noticeForm.elements['title'].getAttribute('minlength');
+      var maxValue = noticeForm.elements['title'].getAttribute('minlength');
+      if (title.validity.tooShort) {
+        title.setCustomValidity('Минимальная длина заголовка ' + minValue + ' символов.');
+      } else if (title.validity.tooLong) {
+        title.setCustomValidity('Максимальная длина заголовка ' + maxValue + ' символов.');
+      } else if (title.validity.valueMissing) {
+        title.setCustomValidity('Заполните поле!');
+      } else {
+        title.setCustomValidity('');
+      }
+    });
+
+    // Проверка на валидацию цены
+
+    noticeForm.elements['price'].addEventListener('invalid', function () {
+      var price = noticeForm.elements['price'];
+      if (price.validity.rangeUnderflow) {
+        price.setCustomValidity('Минимальная цена ' + price.getAttribute('min'));
+      } else if (price.validity.rangeOverflow) {
+        price.setCustomValidity('Максимальная цена ' + price.getAttribute('max'));
+      } else if (price.validity.valueMissing) {
+        price.setCustomValidity('Поле не должно быть пустым!');
+      } else {
+        price.setCustomValidity('');
+      }
+    });
+
+    publishSubmit.addEventListener('click', publishSubmitClickHandler);
   });
 })();
