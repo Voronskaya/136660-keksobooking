@@ -1,7 +1,6 @@
 'use strict';
 (function () {
   var template = document.querySelector('template').content;
-  var map = document.querySelector('.map');
 
   window.card = {
     renderMapCard: function (descriptionOffer, imgAvatar) {
@@ -29,14 +28,6 @@
       offerDescription.textContent = descriptionOffer.description;
       avatarUser.src = imgAvatar;
       return mapCardElement;
-    },
-    takeMapCard: function (src) {
-      for (var i = 0; i < descriptions.length; i++) {
-        if (src === descriptions[i].author.avatar) {
-          var index = i;
-          renderMapCardList(index);
-        }
-      }
     }
   };
 
@@ -52,12 +43,6 @@
     return translationType;
   };
 
-  var renderMapCardList = function (index) {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(window.card.renderMapCard(descriptions[index].offer, descriptions[index].author.avatar));
-    map.appendChild(fragment);
-  };
-
   var createFeatures = function (features) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < features.length; i++) {
@@ -67,5 +52,4 @@
     }
     return fragment;
   };
-  var descriptions = window.data.createDescription(8);
 })();

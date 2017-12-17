@@ -3,6 +3,27 @@
   var map = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
   var template = document.querySelector('template').content;
+
+  var takeMapCard = function (src) {
+    for (var i = 0; i < descriptions.length; i++) {
+      if (src === descriptions[i].author.avatar) {
+        var index = i;
+        renderMapCardList(index);
+      }
+    }
+  };
+
+  var activatePin = function (pin) {
+    pin.classList.add('map__pin--active');
+  };
+
+  var deactivatePin = function () {
+    var activePin = map.querySelector('.map__pin--active');
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
+    }
+  };
+
   var renderMapPin = function (coordinateX, coordinateY, imgAvatar) {
     var templateElement = template.cloneNode(true);
     var mapPinElement = templateElement.querySelector('.map__pin');
@@ -16,7 +37,6 @@
 
     return mapPinElement;
   };
-  var descriptions = window.data.createDescription(8);
 
   window.pin = {
     renderMapPinList: function () {
@@ -27,23 +47,21 @@
       }
       mapPins.appendChild(fragment);
     },
-    activatePin: function (pin) {
-      pin.classList.add('map__pin--active');
-    },
-    deactivatePin: function () {
-      var activePin = map.querySelector('.map__pin--active');
-      if (activePin) {
-        activePin.classList.remove('map__pin--active');
-      }
-    },
     openPopup: function (pin, src) {
-      window.pin.deactivatePin();
-      window.pin.activatePin(pin);
-      window.card.takeMapCard(src);
+      deactivatePin();
+      activatePin(pin);
+      takeMapCard(src);
     },
     closePopup: function (popup) {
       popup.remove();
-      window.pin.deactivatePin();
+      deactivatePin();
     }
   };
+
+  var renderMapCardList = function (index) {
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(window.card.renderMapCard(descriptions[index].offer, descriptions[index].author.avatar));
+    map.appendChild(fragment);
+  };
+  var descriptions = window.data.createDescription(8);
 })();
