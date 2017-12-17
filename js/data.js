@@ -64,6 +64,8 @@
     };
   };
 
+  var avatars = getAvatarList(8);
+
   window.data = {
     createDescription: function (range) {
       var descriptions = [];
@@ -78,5 +80,5 @@
       return descriptions;
     }
   };
-  var avatars = getAvatarList(8);
+
 })();

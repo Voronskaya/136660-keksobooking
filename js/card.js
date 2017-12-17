@@ -2,6 +2,28 @@
 (function () {
   var template = document.querySelector('template').content;
 
+  var getDescriptionType = function (descriptionType) {
+    var translationType;
+    if (descriptionType === 'flat') {
+      translationType = 'Квартира';
+    } else if (descriptionType === 'bungalo') {
+      translationType = 'Бунгало';
+    } else if (descriptionType === 'house') {
+      translationType = 'Дом';
+    }
+    return translationType;
+  };
+
+  var createFeatures = function (features) {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < features.length; i++) {
+      var featureElement = document.createElement('li');
+      featureElement.className = 'feature feature--' + features[i];
+      fragment.appendChild(featureElement);
+    }
+    return fragment;
+  };
+
   window.card = {
     renderMapCard: function (descriptionOffer, imgAvatar) {
       var offerElement = template.cloneNode(true);
@@ -29,27 +51,5 @@
       avatarUser.src = imgAvatar;
       return mapCardElement;
     }
-  };
-
-  var getDescriptionType = function (descriptionType) {
-    var translationType;
-    if (descriptionType === 'flat') {
-      translationType = 'Квартира';
-    } else if (descriptionType === 'bungalo') {
-      translationType = 'Бунгало';
-    } else if (descriptionType === 'house') {
-      translationType = 'Дом';
-    }
-    return translationType;
-  };
-
-  var createFeatures = function (features) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < features.length; i++) {
-      var featureElement = document.createElement('li');
-      featureElement.className = 'feature feature--' + features[i];
-      fragment.appendChild(featureElement);
-    }
-    return fragment;
   };
 })();
