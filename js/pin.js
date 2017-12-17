@@ -1,24 +1,15 @@
 'use strict';
 (function () {
-  var map = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
   var template = document.querySelector('template').content;
-
-  var takeMapCard = function (src) {
-    for (var i = 0; i < descriptions.length; i++) {
-      if (src === descriptions[i].author.avatar) {
-        var index = i;
-        renderMapCardList(index);
-      }
-    }
-  };
+  var descriptions = window.data.createDescription(8);
 
   var activatePin = function (pin) {
     pin.classList.add('map__pin--active');
   };
 
   var deactivatePin = function () {
-    var activePin = map.querySelector('.map__pin--active');
+    var activePin = document.querySelector('.map__pin--active');
     if (activePin) {
       activePin.classList.remove('map__pin--active');
     }
@@ -50,18 +41,11 @@
     openPopup: function (pin, src) {
       deactivatePin();
       activatePin(pin);
-      takeMapCard(src);
+      window.card.takeMapCard(src);
     },
     closePopup: function (popup) {
       popup.remove();
       deactivatePin();
     }
   };
-
-  var renderMapCardList = function (index) {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(window.card.renderMapCard(descriptions[index].offer, descriptions[index].author.avatar));
-    map.appendChild(fragment);
-  };
-  var descriptions = window.data.createDescription(8);
 })();
