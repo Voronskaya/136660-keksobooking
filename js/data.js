@@ -25,6 +25,8 @@
     };
   };
 
+  var avatars = getAvatarList(8);
+
   var getLocation = function () {
     var coordinateX = window.util.getRandomInteger(300, 900);
     var coordinateY = window.util.getRandomInteger(100, 500);
@@ -64,20 +66,20 @@
     };
   };
 
-  var avatars = getAvatarList(8);
-
-  window.data = {
-    createDescription: function (range) {
-      var descriptions = [];
-      var copyAvatars = avatars.slice();
-      var copyTitles = TITLES.slice();
-      for (var i = 0; i < range; i++) {
-        var author = getAuthor(copyAvatars);
-        var location = getLocation();
-        var offer = getOffer(location.x, location.y, copyTitles);
-        descriptions.push(getDescription(author, offer, location));
-      }
-      return descriptions;
+  var createDescription = function (range) {
+    var descriptions = [];
+    var copyAvatars = avatars.slice();
+    var copyTitles = TITLES.slice();
+    for (var i = 0; i < range; i++) {
+      var author = getAuthor(copyAvatars);
+      var location = getLocation();
+      var offer = getOffer(location.x, location.y, copyTitles);
+      descriptions.push(getDescription(author, offer, location));
     }
+    return descriptions;
+  };
+
+  window. data = {
+    descriptions: createDescription(8)
   };
 })();

@@ -31,9 +31,9 @@
   window.pin = {
     renderMapPinList: function () {
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < window.card.descriptions.length; i++) {
-        fragment.appendChild(renderMapPin(window.card.descriptions[i].location.x,
-            window.card.descriptions[i].location.y, window.card.descriptions[i].author.avatar));
+      for (var i = 0; i < window.data.descriptions.length; i++) {
+        fragment.appendChild(renderMapPin(window.data.descriptions[i].location.x,
+            window.data.descriptions[i].location.y, window.data.descriptions[i].author.avatar));
       }
       mapPins.appendChild(fragment);
     },
