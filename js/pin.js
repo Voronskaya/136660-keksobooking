@@ -2,7 +2,6 @@
 (function () {
   var mapPins = document.querySelector('.map__pins');
   var template = document.querySelector('template').content;
-  var descriptions = window.data.createDescription(8);
 
   var activatePin = function (pin) {
     pin.classList.add('map__pin--active');
@@ -32,9 +31,9 @@
   window.pin = {
     renderMapPinList: function () {
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < descriptions.length; i++) {
-        fragment.appendChild(renderMapPin(descriptions[i].location.x,
-            descriptions[i].location.y, descriptions[i].author.avatar));
+      for (var i = 0; i < window.card.descriptions.length; i++) {
+        fragment.appendChild(renderMapPin(window.card.descriptions[i].location.x,
+            window.card.descriptions[i].location.y, window.card.descriptions[i].author.avatar));
       }
       mapPins.appendChild(fragment);
     },

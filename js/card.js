@@ -1,7 +1,8 @@
 'use strict';
 (function () {
   var template = document.querySelector('template').content;
-  var descriptions = window.data.createDescription(8);
+  // var map = document.querySelector('.map');
+  // var descriptions = window.data.createDescription(8);
 
   var getDescriptionType = function (descriptionType) {
     var translationType;
@@ -54,18 +55,19 @@
 
   var renderMapCardList = function (index) {
     var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderMapCard(descriptions[index].offer, descriptions[index].author.avatar));
+    fragment.appendChild(renderMapCard(window.card.descriptions[index].offer, window.card.descriptions[index].author.avatar));
     window.map.appendChild(fragment);
   };
 
   window.card = {
     takeMapCard: function (src) {
-      for (var i = 0; i < descriptions.length; i++) {
-        if (src === descriptions[i].author.avatar) {
+      for (var i = 0; i < window.card.descriptions.length; i++) {
+        if (src === window.card.descriptions[i].author.avatar) {
           var index = i;
           renderMapCardList(index);
         }
       }
-    }
+    },
+    descriptions: window.data.createDescription(8)
   };
 })();

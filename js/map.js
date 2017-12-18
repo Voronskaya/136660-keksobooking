@@ -5,8 +5,8 @@
     var ESC_KEYCODE = 27;
     var ENTER_KEYCODE = 13;
     var noticeForm = document.querySelector('.notice__form');
-    var map = document.querySelector('.map');
-    var mapPinMain = map.querySelector('.map__pin--main');
+    window.map = document.querySelector('.map');
+    var mapPinMain = window.map.querySelector('.map__pin--main');
     var fieldsets = document.querySelectorAll('fieldset');
 
     var disableForm = function (boolean) {
@@ -16,7 +16,7 @@
     };
 
     var showMap = function () {
-      map.classList.remove('map--faded');
+      window.map.classList.remove('map--faded');
       window.pin.renderMapPinList();
       noticeForm.classList.remove('notice__form--disabled');
       disableForm(false);
@@ -34,7 +34,7 @@
       }
     });
 
-    map.addEventListener('click', function (evt) {
+    window.map.addEventListener('click', function (evt) {
       var target = evt.target;
       if (target.classList.contains('popup__close')) {
         window.pin.closePopup(target.parentNode);
@@ -51,7 +51,7 @@
 
     document.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
-        var popup = map.querySelector('.popup');
+        var popup = window.map.querySelector('.popup');
         if (popup) {
           window.pin.closePopup(popup);
         }
