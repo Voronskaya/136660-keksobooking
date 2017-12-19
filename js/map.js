@@ -4,6 +4,9 @@
   document.addEventListener('DOMContentLoaded', function () {
     var ESC_KEYCODE = 27;
     var ENTER_KEYCODE = 13;
+    var TOP_RANGE_Y = 100;
+    var BOTTOM_RANGE_Y = 500;
+
     var noticeForm = document.querySelector('.notice__form');
     var map = document.querySelector('.map');
     var mapPinMain = map.querySelector('.map__pin--main');
@@ -32,6 +35,64 @@
       if (evt.keyCode === ENTER_KEYCODE) {
         showMap();
       }
+    });
+
+    var getBorderCoordinateY = function (coordinateY, height) {
+      var topRange = TOP_RANGE_Y - height;
+      var bottomRange = BOTTOM_RANGE_Y - height;
+
+      if (coordinateY < topRange) {
+        coordinateY = topRange;
+      } else if (coordinateY > bottomRange) {
+        coordinateY = bottomRange;
+      }
+      return coordinateY;
+    };
+
+    mapPinMain.addEventListener('mousedown', function (evt) {
+      evt.preventDefault();
+      var sizeMapPinHeight = 62;
+      var sizeMapPinAngleHeight = 22;
+      var partPinHeight = (sizeMapPinHeight / 2) + sizeMapPinAngleHeight;
+
+      var startCoords = {
+        x: evt.pageX,
+        y: evt.pageY
+      };
+
+      var mapPinMainMousemoveHandler = function (moveEvt) {
+        var shift = {
+          x: startCoords.x - moveEvt.pageX,
+          y: startCoords.y - moveEvt.pageY
+        };
+
+        var pinMainCoords = {
+          x: mapPinMain.offsetLeft - shift.x,
+          y: mapPinMain.offsetTop - shift.y
+        };
+
+        startCoords = {
+          x: moveEvt.pageX,
+          y: moveEvt.pageY
+        };
+
+        mapPinMain.style.left = pinMainCoords.x + 'px';
+        mapPinMain.style.top = getBorderCoordinateY(pinMainCoords.y, partPinHeight) + 'px';
+      };
+
+      var mapPinMainMouseupHandler = function () {
+        var pinMainCoords = {
+          x: mapPinMain.offsetLeft,
+          y: mapPinMain.offsetTop + partPinHeight
+        };
+
+        noticeForm.elements['address'].value = 'x: ' + pinMainCoords.x + ', y: ' + pinMainCoords.y;
+        document.removeEventListener('mousemove', mapPinMainMousemoveHandler);
+        document.removeEventListener('mouseup', mapPinMainMouseupHandler);
+      };
+
+      document.addEventListener('mousemove', mapPinMainMousemoveHandler);
+      document.addEventListener('mouseup', mapPinMainMouseupHandler);
     });
 
     map.addEventListener('click', function (evt) {
