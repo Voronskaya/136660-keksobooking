@@ -6,8 +6,6 @@
     var ENTER_KEYCODE = 13;
     var TOP_RANGE_Y = 100;
     var BOTTOM_RANGE_Y = 500;
-    var sizeMapPinWidth = 62;
-    var sizeMapPinHeight = 84;
 
     var noticeForm = document.querySelector('.notice__form');
     var map = document.querySelector('.map');
@@ -39,20 +37,21 @@
       }
     });
 
-    var getBorderCoordinateY = function (coordinateY) {
-      var topBorder = TOP_RANGE_Y - sizeMapPinHeight;
-      var bottomBorder = BOTTOM_RANGE_Y - sizeMapPinHeight;
-
-      if (coordinateY < topBorder) {
-        coordinateY = topBorder;
-      } else if (coordinateY > bottomBorder) {
-        coordinateY = bottomBorder;
+    var getBorderCoordinateY = function (coordinateY, height) {
+      if (coordinateY < (TOP_RANGE_Y - height)) {
+        coordinateY = (TOP_RANGE_Y - height);
+      } else if (coordinateY > (BOTTOM_RANGE_Y - height)) {
+        coordinateY = (BOTTOM_RANGE_Y - height);
       }
       return coordinateY;
     };
 
     mapPinMain.addEventListener('mousedown', function (evt) {
       evt.preventDefault();
+      var sizeMapPinHeight = 62;
+      var sizeMapPinAngleHeight = 22;
+      var partPinHeight = (sizeMapPinHeight / 2) + sizeMapPinAngleHeight;
+
       var startCoords = {
         x: evt.pageX,
         y: evt.pageY
@@ -75,14 +74,14 @@
         };
 
         mapPinMain.style.left = pinMainCoords.x + 'px';
-        mapPinMain.style.top = getBorderCoordinateY(pinMainCoords.y) + 'px';
+        mapPinMain.style.top = getBorderCoordinateY(pinMainCoords.y, partPinHeight) + 'px';
         mapPinMain.style.zIndex = '2';
       };
 
       var mapPinMainMouseupHandler = function () {
         var pinMainCoords = {
-          x: mapPinMain.offsetLeft - (sizeMapPinWidth / 2),
-          y: mapPinMain.offsetTop - sizeMapPinHeight
+          x: mapPinMain.offsetLeft,
+          y: mapPinMain.offsetTop + partPinHeight
         };
 
         noticeForm.elements['address'].value = 'x: ' + pinMainCoords.x + ', y: ' + pinMainCoords.y;
