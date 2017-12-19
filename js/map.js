@@ -38,10 +38,13 @@
     });
 
     var getBorderCoordinateY = function (coordinateY, height) {
-      if (coordinateY < (TOP_RANGE_Y - height)) {
-        coordinateY = (TOP_RANGE_Y - height);
-      } else if (coordinateY > (BOTTOM_RANGE_Y - height)) {
-        coordinateY = (BOTTOM_RANGE_Y - height);
+      var topRange = TOP_RANGE_Y - height;
+      var bottomRange = BOTTOM_RANGE_Y - height;
+
+      if (coordinateY < topRange) {
+        coordinateY = topRange;
+      } else if (coordinateY > bottomRange) {
+        coordinateY = bottomRange;
       }
       return coordinateY;
     };
@@ -75,7 +78,6 @@
 
         mapPinMain.style.left = pinMainCoords.x + 'px';
         mapPinMain.style.top = getBorderCoordinateY(pinMainCoords.y, partPinHeight) + 'px';
-        mapPinMain.style.zIndex = '2';
       };
 
       var mapPinMainMouseupHandler = function () {
