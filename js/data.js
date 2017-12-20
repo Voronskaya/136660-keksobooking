@@ -9,6 +9,11 @@
   var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
+  // window.data = {
+  //   CHECK_IN_TIMES: ['12:00', '13:00', '14:00'],
+  //   CHECK_OUT_TIMES: ['12:00', '13:00', '14:00']
+  // }
+
   var getAvatarList = function (range) {
     var avatars = [];
     var src = 'img/avatars/user0';

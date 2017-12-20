@@ -52,20 +52,11 @@
     return mapCardElement;
   };
 
-  var renderMapCardList = function (index) {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderMapCard(window.data.descriptions[index].offer, window.data.descriptions[index].author.avatar));
-    map.appendChild(fragment);
-  };
-
   window.card = {
-    takeMapCard: function (src) {
-      for (var i = 0; i < window.data.descriptions.length; i++) {
-        if (src === window.data.descriptions[i].author.avatar) {
-          var index = i;
-          renderMapCardList(index);
-        }
-      }
+    renderMapCardList: function (index) {
+      var fragment = document.createDocumentFragment();
+      fragment.appendChild(renderMapCard(window.data.descriptions[index].offer, window.data.descriptions[index].author.avatar));
+      map.appendChild(fragment);
     }
   };
 })();
