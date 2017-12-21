@@ -40,7 +40,7 @@
     openPopup: function (pin, src) {
       deactivatePin();
       activatePin(pin);
-      window.card.takeMapCard(src);
+      window.showCard.takeMapCard(src);
     },
     closePopup: function (popup) {
       popup.remove();
