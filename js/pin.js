@@ -10,9 +10,8 @@
   var housingGuests = document.querySelector('#housing-guests');
   var housingFeatures = document.querySelector('#housing-features');
   var DEBOUNCE_INTERVAL = 500;
-
+  var lastTimeout;
   var debounce = function (fun) {
-    var lastTimeout;
     if (lastTimeout) {
       clearTimeout(lastTimeout);
     }
