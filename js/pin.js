@@ -9,6 +9,15 @@
   var housingRooms = document.querySelector('#housing-rooms');
   var housingGuests = document.querySelector('#housing-guests');
   var housingFeatures = document.querySelector('#housing-features');
+  var DEBOUNCE_INTERVAL = 500;
+
+  var debounce = function (fun) {
+    var lastTimeout;
+    if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
+    lastTimeout = setTimeout(fun, DEBOUNCE_INTERVAL);
+  };
 
   var activatePin = function (pin) {
     pin.classList.add('map__pin--active');
@@ -91,12 +100,7 @@
       }
 
       var fragment = document.createDocumentFragment();
-      var limitPins;
-      if (pins.length > 5) {
-        limitPins = 5;
-      } else {
-        limitPins = pins.length;
-      }
+      var limitPins = (pins.length > 5) ? 5 : pins.length;
 
       for (var i = 0; i < limitPins; i++) {
         fragment.appendChild(renderMapPin(pins[i].location.x,
@@ -116,6 +120,6 @@
     }
   };
   mapFilters.addEventListener('change', function () {
-    window.pin.renderMapPinList();
+    debounce(window.pin.renderMapPinList);
   });
 })();
