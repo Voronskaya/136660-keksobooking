@@ -19,11 +19,11 @@
 
     var showMap = function () {
       map.classList.remove('map--faded');
-      var onDataLoad = function (data) {
+      var dataLoadHandler = function (data) {
         window.data.descriptions = data;
         window.pin.renderMapPinList();
       };
-      window.backend.download(onDataLoad, window.backend.errorHandler);
+      window.backend.download(dataLoadHandler, window.backend.errorHandler);
       noticeForm.classList.remove('notice__form--disabled');
       disableForm(false);
     };
