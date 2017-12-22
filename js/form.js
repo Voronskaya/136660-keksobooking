@@ -4,20 +4,6 @@
   var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
   var PRICE_NIGHT = ['1000', '0', '5000', '10000'];
   var APARTMENT_TYPE = ['flat', 'bungalo', 'house', 'palace'];
-
-  // var QUANTITY_GUESTS = {
-  //   one: '1',
-  //   two: '2',
-  //   three: '3',
-  //   zero: '0'
-  // };
-
-  // var QUANTITY_ROOMS = {
-  //   one: '1',
-  //   two: '2',
-  //   three: '3',
-  //   hundred: '100'
-  // };
   var ROOMS = ['1', '2', '3', '100'];
   var GUESTS = ['1', ['1', '2'], ['1', '2', '3'], '0'];
 
@@ -83,6 +69,10 @@
     }
   };
 
+  var resetDataForm = function () {
+    noticeForm.reset();
+  };
+
   noticeForm.elements['title'].addEventListener('invalid', function () {
     var title = noticeForm.elements['title'];
     var minValue = noticeForm.elements['title'].getAttribute('minlength');
@@ -119,6 +109,11 @@
       price.setCustomValidity('');
     }
   });
+
   hideCapacity();
   publishSubmit.addEventListener('click', publishSubmitClickHandler);
+  noticeForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.upload(new FormData(noticeForm), resetDataForm, window.backend.errorHandler);
+  });
 })();
