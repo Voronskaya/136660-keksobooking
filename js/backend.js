@@ -57,21 +57,31 @@
     },
     errorHandler: function (errorMessage) {
       var errorPopup = document.createElement('div');
+      var closeButton = document.createElement('button');
       errorPopup.style.position = 'fixed';
       errorPopup.style.top = '30%';
-      errorPopup.style.left = '40%';
+      errorPopup.style.left = '33%';
       errorPopup.style.backgroundColor = 'white';
       errorPopup.style.color = 'tomato';
-      errorPopup.style.fontSize = '18px';
+      errorPopup.style.fontSize = '20px';
       errorPopup.style.padding = '50px';
       errorPopup.style.border = '1px solid tomato';
       errorPopup.style.zIndex = '10';
-      errorPopup.textContent = errorMessage;
+      errorPopup.style.textAlign = 'center';
+      errorPopup.innerHTML = '<p>' + errorMessage + '</p>';
       document.body.insertAdjacentElement('afterbegin', errorPopup);
 
-      setTimeout(function () {
+      closeButton.style.marginTop = '20px';
+      closeButton.style.padding = '8px';
+      closeButton.style.border = 'none';
+      closeButton.style.backgroundColor = 'tomato';
+      closeButton.style.color = 'white';
+      closeButton.style.fontSize = '16px';
+      closeButton.innerHTML = 'Закрыть';
+      closeButton.addEventListener('click', function () {
         errorPopup.remove();
-      }, 3000);
+      });
+      errorPopup.appendChild(closeButton);
     }
   };
 })();
