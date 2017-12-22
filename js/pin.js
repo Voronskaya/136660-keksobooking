@@ -9,7 +9,6 @@
   var housingRooms = document.querySelector('#housing-rooms');
   var housingGuests = document.querySelector('#housing-guests');
   var housingFeatures = document.querySelector('#housing-features');
-  var LIMIT_PINS = 5;
 
   var activatePin = function (pin) {
     pin.classList.add('map__pin--active');
@@ -92,12 +91,17 @@
       }
 
       var fragment = document.createDocumentFragment();
-      pins.forEach(function (pin) {
-        for (var i = 0; i < LIMIT_PINS; i++) {
-          fragment.appendChild(renderMapPin(pin.location.x,
-              pin.location.y, pin.author.avatar));
-        }
-      });
+      var limitPins;
+      if (pins.length > 5) {
+        limitPins = 5;
+      } else {
+        limitPins = pins.length;
+      }
+
+      for (var i = 0; i < limitPins; i++) {
+        fragment.appendChild(renderMapPin(pins[i].location.x,
+            pins[i].location.y, pins[i].author.avatar));
+      }
 
       mapPins.appendChild(fragment);
     },
