@@ -47,5 +47,4 @@
       deactivatePin();
     }
   };
-  window.backend.download(window.pin.renderMapPinList, window.backend.errorHandler);
 })();

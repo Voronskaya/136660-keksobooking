@@ -114,6 +114,6 @@
   publishSubmit.addEventListener('click', publishSubmitClickHandler);
   noticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.backend.upload(new FormData(noticeForm), resetDataForm, window.backend.onError);
+    window.backend.upload(new FormData(noticeForm), resetDataForm, window.backend.errorHandler);
   });
 })();

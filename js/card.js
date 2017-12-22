@@ -51,12 +51,4 @@
       return mapCardElement;
     }
   };
-
-  // window.card = {
-  //   renderMapCardList: function (index) {
-  //     var fragment = document.createDocumentFragment();
-  //     fragment.appendChild(renderMapCard(window.data.descriptions[index].offer, window.data.descriptions[index].author.avatar));
-  //     map.appendChild(fragment);
-  //   }
-  // };
 })();

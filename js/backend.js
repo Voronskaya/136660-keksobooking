@@ -9,9 +9,8 @@
       xhr.addEventListener('load', function () {
         if (xhr.status === 200) {
           onLoad(xhr.response);
-          console(xhr.responseText);
         } else {
-          showError('Неизвестный статус: ' + xhr.status + '' + xhr.statusText);
+          errorHandler('Неизвестный статус: ' + xhr.status + '' + xhr.statusText);
         }
       });
 
@@ -28,16 +27,15 @@
       xhr.send();
     },
     upload: function (data, onLoad, errorHandler) {
-      var URL_POST = 'https://js.dump.academy/keksobookinggg';
+      var URL_POST = 'https://js.dump.academy/keksobookingg';
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
       xhr.addEventListener('load', function () {
-        if (xhr.status == 200) {
+        if (xhr.status === 200) {
           onLoad(xhr.response);
-          console.log(xhr.response);
         } else {
-        errorHandler('Неизвестный статус: ' + xhr.status + '' + xhr.statusText);
+          errorHandler('Неизвестный статус: ' + xhr.status + '' + xhr.statusText);
         }
       });
 
@@ -53,8 +51,22 @@
       xhr.open('POST', URL_POST);
       xhr.send(data);
     },
-    errorHandler: function(error) {
-      console.log(error);
+    errorHandler: function (errorMessage) {
+      var errorPopup = document.createElement('div');
+      errorPopup.style.position = 'absolute';
+      errorPopup.style.top = '50%';
+      errorPopup.style.backgroundColor = 'white';
+      errorPopup.style.color = 'tomato';
+      errorPopup.style.fontSize = '18px';
+      errorPopup.style.padding = '20px 20px';
+      errorPopup.style.border = '1px solid tomato';
+      errorPopup.style.zIndex = '10';
+      errorPopup.textContent = errorMessage;
+      document.body.insertAdjacentElement('afterbegin', errorPopup);
+
+      setTimeout(function () {
+        errorPopup.remove();
+      }, 120000);
     }
   };
 })();
