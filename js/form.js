@@ -8,6 +8,7 @@
   var GUESTS = ['1', ['1', '2'], ['1', '2', '3'], '0'];
 
   var noticeForm = document.querySelector('.notice__form');
+  var inputs = noticeForm.querySelectorAll('input');
   var publishSubmit = noticeForm.querySelector('.form__submit');
   var timein = noticeForm.elements['timein'];
   var timeout = noticeForm.elements['timeout'];
@@ -15,6 +16,8 @@
   var price = noticeForm.elements['price'];
   var capacity = noticeForm.elements['capacity'];
   var quantityRooms = noticeForm.elements['room_number'];
+  var title = noticeForm.elements['title'];
+  var address = noticeForm.elements['address'];
 
   var syncValues = function (element, value) {
     element.value = value;
@@ -55,28 +58,32 @@
   window.syncFieldsFromQuantity(quantityRooms, capacity, ROOMS, GUESTS, syncQuantityRoomsGuests);
 
   var hideCapacity = function () {
-    for (var i = 0; i < noticeForm.elements['capacity'].length; i++) {
-      noticeForm.elements['capacity'].options[i].setAttribute('hidden', true);
+    for (var i = 0; i < capacity.length; i++) {
+      capacity.options[i].setAttribute('hidden', true);
     }
   };
 
   var publishSubmitClickHandler = function () {
-    var inputs = noticeForm.querySelectorAll('input');
-    for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].checkValidity() === false) {
-        inputs[i].style.borderColor = 'red';
+    inputs.forEach(function (input) {
+      if (!input.checkValidity()) {
+        input.style.borderColor = 'red';
       }
-    }
+      if (!address.value) {
+        address.style.borderColor = 'red';
+      }
+    });
   };
 
   var resetDataForm = function () {
     noticeForm.reset();
+    inputs.forEach(function (input) {
+      input.style.borderColor = '';
+    });
   };
 
-  noticeForm.elements['title'].addEventListener('invalid', function () {
-    var title = noticeForm.elements['title'];
-    var minValue = noticeForm.elements['title'].getAttribute('minlength');
-    var maxValue = noticeForm.elements['title'].getAttribute('minlength');
+  title.addEventListener('invalid', function () {
+    var minValue = title.getAttribute('minlength');
+    var maxValue = title.getAttribute('minlength');
     if (title.validity.tooShort) {
       title.setCustomValidity('Минимальная длина заголовка ' + minValue + ' символов.');
     } else if (title.validity.tooLong) {
@@ -88,8 +95,8 @@
     }
   });
 
-  noticeForm.elements['title'].addEventListener('input', function (evt) {
-    var minlengthTitle = Number(noticeForm.elements['title'].getAttribute('minlength'));
+  title.addEventListener('input', function (evt) {
+    var minlengthTitle = Number(title.getAttribute('minlength'));
     var target = evt.target;
     if (target.value.length < minlengthTitle) {
       target.setCustomValidity('Минимальная длина заголовка ' + minlengthTitle + ' символов.');
@@ -98,7 +105,7 @@
     }
   });
 
-  noticeForm.elements['price'].addEventListener('invalid', function () {
+  price.addEventListener('invalid', function () {
     if (price.validity.rangeUnderflow) {
       price.setCustomValidity('Минимальная цена ' + price.getAttribute('min'));
     } else if (price.validity.rangeOverflow) {

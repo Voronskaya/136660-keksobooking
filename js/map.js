@@ -7,6 +7,7 @@
     var BOTTOM_RANGE_Y = 500;
 
     var noticeForm = document.querySelector('.notice__form');
+    var address = noticeForm.elements['address'];
     var map = document.querySelector('.map');
     var mapPinMain = map.querySelector('.map__pin--main');
     var fieldsets = document.querySelectorAll('fieldset');
@@ -21,7 +22,7 @@
       map.classList.remove('map--faded');
       var dataLoadHandler = function (data) {
         window.data.descriptions = data;
-        window.pin.renderMapPinList();
+        window.pin. renderFiltered();
       };
       window.backend.download(dataLoadHandler, window.backend.errorHandler);
       noticeForm.classList.remove('notice__form--disabled');
@@ -89,7 +90,7 @@
           y: mapPinMain.offsetTop + partPinHeight
         };
 
-        noticeForm.elements['address'].value = 'x: ' + pinMainCoords.x + ', y: ' + pinMainCoords.y;
+        address.value = 'x: ' + pinMainCoords.x + ', y: ' + pinMainCoords.y;
         document.removeEventListener('mousemove', mapPinMainMousemoveHandler);
         document.removeEventListener('mouseup', mapPinMainMouseupHandler);
       };
